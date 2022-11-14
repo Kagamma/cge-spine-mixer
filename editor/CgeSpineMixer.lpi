@@ -26,9 +26,6 @@
     </RunParams>
     <RequiredPackages>
       <Item>
-        <PackageName Value="bgracontrols"/>
-      </Item>
-      <Item>
         <PackageName Value="castle_window"/>
       </Item>
       <Item>

@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ExtCtrls,
   StdCtrls, Buttons, ComCtrls, Spin, CastleControl,
   CastleApplicationProperties, CastleUIControls, CastleUIState, FileUtil,
-  CastleSceneCore, CastleScene, CastleVectors, CastleSpineMixer,
+  CastleSceneCore, CastleScene, CastleVectors, CastleSpineMixer, CastleSpine,
   Frame.Mixer,
   Frame.Viewer,
   Frame.Timeline;
@@ -21,8 +21,10 @@ type
     ComboBoxAnimations: TComboBox;
     FloatZoom: TFloatSpinEdit;
     FloatTime: TFloatSpinEdit;
+    ImageList: TImageList;
     Label1: TLabel;
     Label2: TLabel;
+    LabelTime: TLabel;
     MainMenu: TMainMenu;
     MenuItemNewMixerData: TMenuItem;
     MenuItemSaveMixerData: TMenuItem;
@@ -49,8 +51,10 @@ type
     ButtonPlay: TSpeedButton;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
+    TimerPlay: TTimer;
     procedure ButtonAddNewAnimationClick(Sender: TObject);
     procedure ButtonDeleteAnimationClick(Sender: TObject);
+    procedure ButtonPlayClick(Sender: TObject);
     procedure ButtonRenameAnimationClick(Sender: TObject);
     procedure ComboBoxAnimationsChange(Sender: TObject);
     procedure FloatTimeChange(Sender: TObject);
@@ -60,12 +64,16 @@ type
     procedure MenuItemLoadSpineModelClick(Sender: TObject);
     procedure MenuItemNewMixerDataClick(Sender: TObject);
     procedure MenuItemSaveMixerDataClick(Sender: TObject);
+    procedure TimerPlayStartTimer(Sender: TObject);
+    procedure TimerPlayTimer(Sender: TObject);
   private
     StateMain: TUIState;
   public
     FrameMixer: TFrameMixer;
     FrameViewer: TFrameSpineViewer;
     FrameTimeline: TFrameTimeline;
+    AnimationItem: TCastleSpineMixerAnimationItem;
+    Ticks: QWord;
   end;
 
 var
@@ -82,8 +90,11 @@ uses
 type
   TStateMain = class(TUIState)
   private
+    FSpine: TCastleSpine;
   public
     constructor Create(AOwner: TComponent); override;
+  published
+    property Spine: TCastleSpine read FSpine write FSpine;
   end;
 
 constructor TStateMain.Create(AOwner: TComponent);
@@ -104,6 +115,9 @@ begin
   //
   FrameTimeline := TFrameTimeline.Create(Self);
   FrameTimeline.Zoom := 1;
+  FrameTimeline.FIsRepainted := True;
+  FrameTimeline.SelectedTime := -1;
+  FrameTimeline.PaintBoxTimeline.ControlStyle := FrameTimeline.PaintBoxTimeline.ControlStyle + [csOpaque];
   PanelTimeline.InsertControl(FrameTimeline);
   // Load viewer ui data
   TCastleControl.MainControl := FrameViewer.CastleControlViewer;
@@ -136,6 +150,16 @@ begin
     end;
 end;
 
+procedure TFormMain.ButtonPlayClick(Sender: TObject);
+begin
+  if Self.ComboBoxAnimations.ItemIndex >= 0 then
+    TimerPlay.Enabled := not TimerPlay.Enabled;
+  if TimerPlay.Enabled then
+    ButtonPlay.ImageIndex := 16
+  else
+    ButtonPlay.ImageIndex := 2;
+end;
+
 procedure TFormMain.ButtonRenameAnimationClick(Sender: TObject);
 begin
   FormRenameAnimation.Show;
@@ -143,10 +167,19 @@ end;
 
 procedure TFormMain.ComboBoxAnimationsChange(Sender: TObject);
 begin
-  // Reflect time value
-  Self.FloatTime.Value := TCastleSpineMixerAnimationItem(Self.ComboBoxAnimations.Items.Objects[Self.ComboBoxAnimations.ItemIndex]).Duration;
+  FormMain.TimerPlay.Enabled := False;
+  if Self.ComboBoxAnimations.ItemIndex >= 0 then
+  begin
+    //
+    Self.AnimationItem := TCastleSpineMixerAnimationItem(Self.ComboBoxAnimations.Items.Objects[Self.ComboBoxAnimations.ItemIndex]);
+    // Reflect time value
+    Self.FloatTime.Value := Self.AnimationItem.Duration;
+  end;
+  EditorSpineMixer.Time := 0;
+  LabelTime.Caption := FloatToStrF(EditorSpineMixer.Time, fffixed, 0, 3);
+  ButtonPlay.ImageIndex := 2;
   // Redraw timeline
-  Self.FrameTimeline.Invalidate;
+  Self.FrameTimeline.ForceRepaint;
 end;
 
 procedure TFormMain.FloatTimeChange(Sender: TObject);
@@ -154,9 +187,9 @@ begin
   if Self.ComboBoxAnimations.ItemIndex >= 0 then
   begin
     // Change animation time
-    TCastleSpineMixerAnimationItem(Self.ComboBoxAnimations.Items.Objects[Self.ComboBoxAnimations.ItemIndex]).Duration := FloatTime.Value;
+    Self.AnimationItem.Duration := FloatTime.Value;
     // Redraw timeline
-    Self.FrameTimeline.Invalidate;
+    Self.FrameTimeline.ForceRepaint;
   end;
 end;
 
@@ -166,7 +199,7 @@ begin
   begin
     Self.FrameTimeline.Zoom := FloatZoom.Value;
     // Redraw timeline
-    Self.FrameTimeline.Invalidate;
+    Self.FrameTimeline.ForceRepaint;
   end;
 end;
 
@@ -182,7 +215,12 @@ procedure TFormMain.MenuItemLoadSpineModelClick(Sender: TObject);
 begin
   if OpenDialogSpine.Execute then
   begin
-
+    try
+      TStateMain(Self.StateMain).Spine.URL := OpenDialogSpine.FileName;
+    except
+      on E: Exception do
+        ShowMessage(E.Message);
+    end;
   end;
 end;
 
@@ -200,6 +238,26 @@ begin
   begin
 
   end;
+end;
+
+procedure TFormMain.TimerPlayStartTimer(Sender: TObject);
+begin
+  EditorSpineMixer.Time := 0;
+  Ticks := GetTickCount64;
+end;
+
+procedure TFormMain.TimerPlayTimer(Sender: TObject);
+var
+  Dt: Single;
+begin
+  Dt := (GetTickCount64 - Ticks) / 1000;
+  EditorSpineMixer.Time := EditorSpineMixer.Time + Dt;
+  if EditorSpineMixer.Time > Self.AnimationItem.Duration then
+    EditorSpineMixer.Time := 0;
+  Ticks := GetTickCount64;
+  LabelTime.Caption := FloatToStrF(EditorSpineMixer.Time, fffixed, 0, 3);
+  // Redraw timeline
+  Self.FrameTimeline.Update;
 end;
 
 initialization

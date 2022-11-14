@@ -5,7 +5,7 @@ unit Frame.Viewer;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, CastleControl, CastleSpine;
+  Classes, SysUtils, Forms, Controls, CastleControl, CastleSpine, CastleLCLUtils, CastleKeysMouse;
 
 type
 
@@ -13,6 +13,8 @@ type
 
   TFrameSpineViewer = class(TFrame)
     CastleControlViewer: TCastleControl;
+    procedure CastleControlViewerMotion(Sender: TObject;
+      const Event: TInputMotion);
   private
 
   public
@@ -22,6 +24,17 @@ type
 implementation
 
 {$R *.lfm}
+
+uses
+  Form.Main;
+
+{ TFrameSpineViewer }
+
+procedure TFrameSpineViewer.CastleControlViewerMotion(Sender: TObject;
+  const Event: TInputMotion);
+begin
+ // FormMain.FrameTimeline.PaintBoxTimeline.Update;
+end;
 
 end.
 

@@ -17,5 +17,6 @@ object FrameSpineViewer: TFrameSpineViewer
     Align = alClient
     Options = []
     TabOrder = 0
+    OnMotion = CastleControlViewerMotion
   end
 end

@@ -1,7 +1,7 @@
 rm -rf src/components
-rm -rf src/components/spine-runtimes
 
 cd src
+mkdir components
 cd components
 git clone https://github.com/Kagamma/spine-runtimes.git
 cd spine-runtimes

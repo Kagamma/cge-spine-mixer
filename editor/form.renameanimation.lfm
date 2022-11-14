@@ -10,6 +10,7 @@ object FormRenameAnimation: TFormRenameAnimation
   FormStyle = fsStayOnTop
   OnShow = FormShow
   Position = poScreenCenter
+  LCLVersion = '2.3.0.0'
   object EditAnimationName: TEdit
     Left = 16
     Height = 23
@@ -24,6 +25,8 @@ object FormRenameAnimation: TFormRenameAnimation
     Top = 72
     Width = 120
     Caption = 'Ok'
+    Images = FormMain.ImageList
+    ImageIndex = 11
     OnClick = ButtonOkClick
     TabOrder = 1
   end
@@ -33,6 +36,8 @@ object FormRenameAnimation: TFormRenameAnimation
     Top = 72
     Width = 120
     Caption = 'Cancel'
+    Images = FormMain.ImageList
+    ImageIndex = 10
     OnClick = ButtonCancelClick
     TabOrder = 2
   end

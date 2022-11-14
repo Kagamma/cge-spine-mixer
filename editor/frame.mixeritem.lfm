@@ -2,22 +2,22 @@ object FrameMixerItem: TFrameMixerItem
   Left = 0
   Height = 68
   Top = 0
-  Width = 484
+  Width = 422
   Align = alTop
   ClientHeight = 68
-  ClientWidth = 484
+  ClientWidth = 422
   TabOrder = 0
-  DesignLeft = 338
-  DesignTop = 6
+  DesignLeft = 337
+  DesignTop = 5
   object Panel1: TPanel
     Left = 0
     Height = 32
     Top = 0
-    Width = 484
+    Width = 422
     Align = alTop
     BevelOuter = bvNone
     ClientHeight = 32
-    ClientWidth = 484
+    ClientWidth = 422
     TabOrder = 0
     object LabelName: TLabel
       Left = 8
@@ -25,6 +25,7 @@ object FrameMixerItem: TFrameMixerItem
       Top = 8
       Width = 60
       Caption = 'LabelName'
+      Color = clDefault
       ParentColor = False
     end
   end
@@ -32,25 +33,25 @@ object FrameMixerItem: TFrameMixerItem
     Left = 0
     Height = 36
     Top = 32
-    Width = 484
+    Width = 422
     Align = alClient
     ClientHeight = 36
-    ClientWidth = 484
+    ClientWidth = 422
     TabOrder = 1
     object Panel3: TPanel
       Left = 1
       Height = 34
       Top = 1
-      Width = 414
+      Width = 352
       Align = alClient
       ClientHeight = 34
-      ClientWidth = 414
+      ClientWidth = 352
       TabOrder = 0
       object TrackBarValue: TTrackBar
         Left = 1
         Height = 32
         Top = 1
-        Width = 412
+        Width = 350
         Max = 100
         OnChange = TrackBarValueChange
         Position = 0
@@ -59,7 +60,7 @@ object FrameMixerItem: TFrameMixerItem
       end
     end
     object Panel4: TPanel
-      Left = 415
+      Left = 353
       Height = 34
       Top = 1
       Width = 68
@@ -72,6 +73,8 @@ object FrameMixerItem: TFrameMixerItem
         Height = 22
         Top = 0
         Width = 23
+        Images = FormMain.ImageList
+        ImageIndex = 10
         OnClick = ButtonDeleteClick
       end
       object LabelValue: TLabel
@@ -80,6 +83,7 @@ object FrameMixerItem: TFrameMixerItem
         Top = 1
         Width = 6
         Caption = '0'
+        Color = clDefault
         ParentColor = False
       end
     end

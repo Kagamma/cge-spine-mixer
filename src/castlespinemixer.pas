@@ -114,7 +114,7 @@ end;
 
 procedure TCastleSpineMixerBehavior.SetTime(const ATime: Single);
 begin
-  Self.FTime := Max(0, Min(1, ATime));
+  Self.FTime := Max(0, ATime);
 end;
 
 constructor TCastleSpineMixerBehavior.Create(AOwner: TComponent);

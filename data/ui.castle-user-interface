@@ -45,22 +45,26 @@
             }
           },
           {
-            "$$ClassName" : "TCastlePlane",
-            "Axis" : 2,
-            "Material" : "pmUnlit",
-            "Name" : "Plane",
-            "RenderOptions" : {
-              "$$ClassName" : "TCastleScene.TSceneRenderOptions"
-            },
-            "SizePersistent" : {
-              "$$ClassName" : "TCastleVector2Persistent",
-              "X" : 2.0000000000000000E+002,
-              "Y" : 2.0000000000000000E+002
-            }
+            "$$ClassName" : "TCastleSpine",
+            "AnimateOnlyWhenVisible" : false,
+            "AutoAnimations" : [
+            ],
+            "ExposeTransforms" : [
+            ],
+            "Name" : "Spine",
+            "ProcessEvents" : true,
+            "Skins" : [
+            ]
           }
         ]
       },
       "Name" : "Viewport",
+      "$Children" : [
+        {
+          "$$ClassName" : "TCastle2DNavigation",
+          "Name" : "Navigation2D"
+        }
+      ],
       "InternalDesignCamera" : {
         "$$ClassName" : "TCastleCamera",
         "Name" : "",

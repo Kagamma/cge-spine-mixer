@@ -16,6 +16,8 @@ object FormAddMixer: TFormAddMixer
     Top = 72
     Width = 120
     Caption = 'Cancel'
+    Images = FormMain.ImageList
+    ImageIndex = 10
     OnClick = ButtonCancelClick
     TabOrder = 0
   end
@@ -25,6 +27,8 @@ object FormAddMixer: TFormAddMixer
     Top = 72
     Width = 120
     Caption = 'Ok'
+    Images = FormMain.ImageList
+    ImageIndex = 11
     OnClick = ButtonOkClick
     TabOrder = 1
   end
