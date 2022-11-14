@@ -1,0 +1,21 @@
+object FrameSpineViewer: TFrameSpineViewer
+  Left = 0
+  Height = 168
+  Top = 0
+  Width = 433
+  Align = alClient
+  ClientHeight = 168
+  ClientWidth = 433
+  TabOrder = 0
+  DesignLeft = 338
+  DesignTop = 6
+  object CastleControlViewer: TCastleControl
+    Left = 0
+    Height = 168
+    Top = 0
+    Width = 433
+    Align = alClient
+    Options = []
+    TabOrder = 0
+  end
+end

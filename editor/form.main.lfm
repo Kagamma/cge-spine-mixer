@@ -1,0 +1,253 @@
+object FormMain: TFormMain
+  Left = -8
+  Height = 601
+  Top = -8
+  Width = 960
+  Caption = 'Castle Spine Mixer'
+  ClientHeight = 601
+  ClientWidth = 960
+  Menu = MainMenu
+  OnCreate = FormCreate
+  Position = poDefault
+  WindowState = wsMaximized
+  object Panel2: TPanel
+    Left = 651
+    Height = 355
+    Top = 0
+    Width = 309
+    Align = alRight
+    ClientHeight = 355
+    ClientWidth = 309
+    TabOrder = 0
+    object Panel4: TPanel
+      Left = 1
+      Height = 39
+      Top = 1
+      Width = 307
+      Align = alTop
+      ClientHeight = 39
+      ClientWidth = 307
+      TabOrder = 0
+      object Panel6: TPanel
+        Left = 1
+        Height = 37
+        Top = 1
+        Width = 215
+        Align = alClient
+        BevelOuter = bvNone
+        BorderWidth = 2
+        ClientHeight = 37
+        ClientWidth = 215
+        TabOrder = 0
+        object ComboBoxAnimations: TComboBox
+          Left = 2
+          Height = 23
+          Top = 2
+          Width = 211
+          Align = alTop
+          ItemHeight = 15
+          OnChange = ComboBoxAnimationsChange
+          ReadOnly = True
+          TabOrder = 0
+        end
+      end
+      object Panel7: TPanel
+        Left = 216
+        Height = 37
+        Top = 1
+        Width = 90
+        Align = alRight
+        BevelOuter = bvNone
+        BorderWidth = 2
+        ClientHeight = 37
+        ClientWidth = 90
+        TabOrder = 1
+        object ButtonAddNewAnimation: TSpeedButton
+          Left = 8
+          Height = 22
+          Top = 3
+          Width = 23
+          OnClick = ButtonAddNewAnimationClick
+        end
+        object ButtonRenameAnimation: TSpeedButton
+          Left = 32
+          Height = 22
+          Top = 3
+          Width = 23
+          OnClick = ButtonRenameAnimationClick
+        end
+        object ButtonDeleteAnimation: TSpeedButton
+          Left = 56
+          Height = 22
+          Top = 3
+          Width = 23
+          OnClick = ButtonDeleteAnimationClick
+        end
+      end
+    end
+    object PanelMixer: TPanel
+      Left = 1
+      Height = 314
+      Top = 40
+      Width = 307
+      Align = alClient
+      TabOrder = 1
+    end
+  end
+  object Panel3: TPanel
+    Left = 0
+    Height = 241
+    Top = 360
+    Width = 960
+    Align = alBottom
+    ClientHeight = 241
+    ClientWidth = 960
+    TabOrder = 1
+    object Panel8: TPanel
+      Left = 1
+      Height = 23
+      Top = 1
+      Width = 958
+      Align = alTop
+      ClientHeight = 23
+      ClientWidth = 958
+      TabOrder = 0
+      object ButtonPlay: TSpeedButton
+        Left = 5
+        Height = 21
+        Top = 1
+        Width = 23
+        Align = alLeft
+        BorderSpacing.Left = 4
+      end
+      object Label1: TLabel
+        Left = 32
+        Height = 21
+        Top = 1
+        Width = 91
+        Align = alLeft
+        BorderSpacing.Left = 4
+        Caption = 'Length (seconds)'
+        ParentColor = False
+      end
+      object FloatTime: TFloatSpinEdit
+        Left = 127
+        Height = 21
+        Top = 1
+        Width = 76
+        Align = alLeft
+        BorderSpacing.Left = 4
+        Increment = 0.1
+        MaxValue = 99999999
+        MinValue = 0.01
+        OnChange = FloatTimeChange
+        TabOrder = 0
+        Value = 1
+      end
+      object Label2: TLabel
+        Left = 207
+        Height = 21
+        Top = 1
+        Width = 32
+        Align = alLeft
+        BorderSpacing.Left = 4
+        Caption = 'Zoom'
+        ParentColor = False
+      end
+      object FloatZoom: TFloatSpinEdit
+        Left = 243
+        Height = 21
+        Top = 1
+        Width = 74
+        Align = alLeft
+        BorderSpacing.Left = 4
+        Increment = 0.25
+        MaxValue = 32
+        MinValue = 0.25
+        OnChange = FloatZoomChange
+        TabOrder = 1
+        Value = 1
+      end
+    end
+    object PanelTimeline: TPanel
+      Left = 1
+      Height = 216
+      Top = 24
+      Width = 958
+      Align = alClient
+      TabOrder = 1
+    end
+  end
+  object Splitter1: TSplitter
+    Left = 646
+    Height = 355
+    Top = 0
+    Width = 5
+    Align = alRight
+    ResizeAnchor = akRight
+  end
+  object Splitter2: TSplitter
+    Cursor = crVSplit
+    Left = 0
+    Height = 5
+    Top = 355
+    Width = 960
+    Align = alBottom
+    ResizeAnchor = akBottom
+  end
+  object PanelViewer: TPanel
+    Left = 0
+    Height = 355
+    Top = 0
+    Width = 646
+    Align = alClient
+    TabOrder = 4
+  end
+  object MainMenu: TMainMenu
+    Left = 22
+    Top = 13
+    object MenuItemFile: TMenuItem
+      Caption = 'File'
+      object MenuItemNewMixerData: TMenuItem
+        Caption = 'New Mixer Data'
+        OnClick = MenuItemNewMixerDataClick
+      end
+      object Separator1: TMenuItem
+        Caption = '-'
+      end
+      object MenuItemLoadSpineModel: TMenuItem
+        Caption = 'Load Spine Model'
+        OnClick = MenuItemLoadSpineModelClick
+      end
+      object MenuItemLoadMixerData: TMenuItem
+        Caption = 'Load Mixer Data'
+        OnClick = MenuItemLoadMixerDataClick
+      end
+      object Separator2: TMenuItem
+        Caption = '-'
+      end
+      object MenuItemSaveMixerData: TMenuItem
+        Caption = 'Save Mixer Data'
+        OnClick = MenuItemSaveMixerDataClick
+      end
+    end
+  end
+  object OpenDialogSpine: TOpenDialog
+    DefaultExt = '.json'
+    Filter = '.json'
+    Left = 112
+    Top = 13
+  end
+  object OpenDialogMixer: TOpenDialog
+    DefaultExt = '.spine-mixer'
+    Filter = '.spine-mixer'
+    Left = 112
+    Top = 81
+  end
+  object SaveDialogMixer: TSaveDialog
+    DefaultExt = '.spine-mixer'
+    Filter = '.spine-mixer'
+    Left = 112
+    Top = 160
+  end
+end

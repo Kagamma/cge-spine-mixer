@@ -1,0 +1,40 @@
+object FormAddMixer: TFormAddMixer
+  Left = 342
+  Height = 119
+  Top = 250
+  Width = 548
+  BorderStyle = bsDialog
+  Caption = 'Add Mixer'
+  ClientHeight = 119
+  ClientWidth = 548
+  FormStyle = fsStayOnTop
+  OnShow = FormShow
+  Position = poScreenCenter
+  object ButtonCancel: TBitBtn
+    Left = 272
+    Height = 30
+    Top = 72
+    Width = 120
+    Caption = 'Cancel'
+    OnClick = ButtonCancelClick
+    TabOrder = 0
+  end
+  object ButtonOk: TBitBtn
+    Left = 400
+    Height = 30
+    Top = 72
+    Width = 120
+    Caption = 'Ok'
+    OnClick = ButtonOkClick
+    TabOrder = 1
+  end
+  object ComboBoxMixer: TComboBox
+    Left = 18
+    Height = 23
+    Top = 17
+    Width = 500
+    ItemHeight = 15
+    TabOrder = 2
+    Text = 'ComboBoxMixer'
+  end
+end

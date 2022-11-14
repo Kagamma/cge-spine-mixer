@@ -1,0 +1,10 @@
+object FrameTimelineItem: TFrameTimelineItem
+  Left = 0
+  Height = 43
+  Top = 0
+  Width = 707
+  Align = alTop
+  TabOrder = 0
+  DesignLeft = 339
+  DesignTop = 7
+end

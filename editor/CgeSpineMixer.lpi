@@ -26,6 +26,18 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="bgracontrols"/>
+      </Item>
+      <Item>
+        <PackageName Value="castle_window"/>
+      </Item>
+      <Item>
+        <PackageName Value="castle_components"/>
+      </Item>
+      <Item>
+        <PackageName Value="castle_base"/>
+      </Item>
+      <Item>
         <PackageName Value="LCL"/>
       </Item>
     </RequiredPackages>
@@ -35,25 +47,82 @@
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="mainunit.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="Form1"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="MainUnit"/>
-      </Unit>
-      <Unit>
         <Filename Value="..\src\castlespinemixer.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="CastleSpineMixer"/>
       </Unit>
       <Unit>
-        <Filename Value="..\src\componnets\spine-runtimes\src\CastleSpine.pas"/>
+        <Filename Value="form.main.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormMain"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Form.Main"/>
+      </Unit>
+      <Unit>
+        <Filename Value="frame.mixeritem.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FrameMixerItem"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="Frame.MixerItem"/>
+      </Unit>
+      <Unit>
+        <Filename Value="frame.mixer.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FrameMixer"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="Frame.Mixer"/>
+      </Unit>
+      <Unit>
+        <Filename Value="frame.viewer.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FrameSpineViewer"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="Frame.Viewer"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\src\components\spine-runtimes\src\CastleSpine.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="..\src\componnets\spine-runtimes\src\spine.pas"/>
+        <Filename Value="..\src\components\spine-runtimes\src\spine.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Spine"/>
+      </Unit>
+      <Unit>
+        <Filename Value="form.newanimation.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormNewAnimation"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Form.NewAnimation"/>
+      </Unit>
+      <Unit>
+        <Filename Value="form.renameanimation.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormRenameAnimation"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Form.RenameAnimation"/>
+      </Unit>
+      <Unit>
+        <Filename Value="frame.timeline.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FrameTimeline"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="Frame.Timeline"/>
+      </Unit>
+      <Unit>
+        <Filename Value="form.addmixer.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormAddMixer"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Form.AddMixer"/>
       </Unit>
     </Units>
   </ProjectOptions>
@@ -61,14 +130,17 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\bin\CgeSpineMixer"/>
+      <Filename Value="..\CgeSpineMixer"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\src;..\src\componnets\spine-runtimes\src"/>
+      <OtherUnitFiles Value="..\src;..\src\components\spine-runtimes\src"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
+      <Debugging>
+        <DebugInfoType Value="dsDwarf2Set"/>
+      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>

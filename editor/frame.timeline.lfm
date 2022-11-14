@@ -1,0 +1,34 @@
+object FrameTimeline: TFrameTimeline
+  Left = 0
+  Height = 359
+  Top = 0
+  Width = 598
+  Align = alClient
+  ClientHeight = 359
+  ClientWidth = 598
+  TabOrder = 0
+  DesignLeft = 338
+  DesignTop = 6
+  object ScrollBoxTimeline: TScrollBox
+    Left = 0
+    Height = 359
+    Top = 0
+    Width = 598
+    HorzScrollBar.Page = 50
+    VertScrollBar.Page = 50
+    Align = alClient
+    ClientHeight = 355
+    ClientWidth = 594
+    TabOrder = 0
+    object PaintBoxTimeline: TPaintBox
+      Left = 0
+      Height = 50
+      Top = 0
+      Width = 50
+      Color = clWhite
+      ParentColor = False
+      OnMouseMove = PaintBoxTimelineMouseMove
+      OnPaint = PaintBoxTimelinePaint
+    end
+  end
+end

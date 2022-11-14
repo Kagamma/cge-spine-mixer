@@ -9,4 +9,3 @@ link*.res
 lib
 castle-engine-output
 src/components/spine-runtimes
-bin

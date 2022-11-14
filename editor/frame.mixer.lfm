@@ -1,0 +1,31 @@
+object FrameMixer: TFrameMixer
+  Left = 0
+  Height = 362
+  Top = 0
+  Width = 383
+  Align = alClient
+  ClientHeight = 362
+  ClientWidth = 383
+  TabOrder = 0
+  DesignLeft = 338
+  DesignTop = 6
+  object ScrollBoxMixer: TScrollBox
+    Left = 0
+    Height = 362
+    Top = 0
+    Width = 383
+    HorzScrollBar.Page = 1
+    VertScrollBar.Page = 1
+    Align = alClient
+    PopupMenu = PopupMenuMixer
+    TabOrder = 0
+  end
+  object PopupMenuMixer: TPopupMenu
+    Left = 16
+    Top = 16
+    object MenuItemAddMixer: TMenuItem
+      Caption = 'Add Mixer'
+      OnClick = MenuItemAddMixerClick
+    end
+  end
+end

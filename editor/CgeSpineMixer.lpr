@@ -10,8 +10,9 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, MainUnit, CastleSpineMixer, CastleSpine, Spine
-  { you can add units after this };
+  Forms, castle_base, castle_components, castle_window, CastleSpineMixer,
+  CastleSpine, Spine, Form.Main, Frame.MixerItem, Frame.Mixer, Frame.Viewer,
+  Form.NewAnimation, Form.RenameAnimation, Frame.Timeline, Form.AddMixer;
 
 {$R *.res}
 
@@ -19,7 +20,10 @@ begin
   RequireDerivedFormResource:=True;
   Application.Scaled:=True;
   Application.Initialize;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TFormMain, FormMain);
+  Application.CreateForm(TFormNewAnimation, FormNewAnimation);
+  Application.CreateForm(TFormRenameAnimation, FormRenameAnimation);
+  Application.CreateForm(TFormAddMixer, FormAddMixer);
   Application.Run;
 end.
 
