@@ -1,0 +1,12 @@
+*.dbg
+*.bak
+*.exe
+*.csv
+*.dll
+*.so
+*.lps
+link*.res
+lib
+castle-engine-output
+src/components/spine-runtimes
+bin
