@@ -111,6 +111,7 @@ begin
   inherited;
   Self.Spine := DesignedComponent('Spine') as TCastleSpine;
   Self.Viewport := DesignedComponent('Viewport') as TCastleViewport;
+  //Self.Spine.AddBehavior(EditorSpineMixer);
 end;
 
 { TFormMain }
@@ -248,6 +249,8 @@ begin
   FreeAndNil(EditorSpineMixer);
   // Create new mixer data
   EditorSpineMixer := TCastleSpineMixerBehavior.Create(Self);
+  //
+  Self.FrameViewer.Spine.AddBehavior(EditorSpineMixer);
 end;
 
 procedure TFormMain.MenuItemSaveMixerDataClick(Sender: TObject);

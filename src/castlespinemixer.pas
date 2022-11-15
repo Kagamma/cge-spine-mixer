@@ -5,7 +5,12 @@ unit CastleSpineMixer;
 interface
 
 uses
-  Classes, SysUtils, CastleTransform, CastleVectors;
+  Classes, SysUtils, CastleVectors, CastleComponentSerialize,
+  {$ifdef CASTLE_DESIGN_MODE}
+  PropEdits, CastlePropEdits, CastleDebugTransform, Forms, Controls, Graphics, Dialogs,
+  ButtonPanel, StdCtrls, ExtCtrls, CastleInternalExposeTransformsDialog,
+  {$endif}
+  CastleTransform;
 
 type
   TCastleSpineMixerAnchorItem = class(TCollectionItem)
@@ -75,6 +80,7 @@ type
   private
     FAnimationList: TCastleSpineMixerAnimationList; // List of animations
     FTime: Single;
+    FURL: String;
     procedure SetTime(const ATime: Single);
   public
     constructor Create(AOwner: TComponent); override;
@@ -88,6 +94,7 @@ type
   published
     property AnimationList: TCastleSpineMixerAnimationList read FAnimationList;
     property Time: Single read FTime write SetTime;
+    property URL: String read FURL write FURL;
   end;
 
 var
@@ -300,6 +307,13 @@ begin
     raise Exception.Create('List out of bound');
   Self.FAnimationList.Items[AIndex].Free;
 end;
+
+initialization
+  RegisterSerializableComponent(TCastleSpineMixerBehavior, 'Spine Mixer Behavior');
+  {$ifdef CASTLE_DESIGN_MODE}
+  RegisterPropertyEditor(TypeInfo(AnsiString), TCastleSpineMixerBehavior, 'URL',
+    TSceneURLPropertyEditor);
+  {$endif}
 
 end.
 

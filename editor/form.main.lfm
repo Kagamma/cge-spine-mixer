@@ -4,12 +4,13 @@ object FormMain: TFormMain
   Top = -8
   Width = 1040
   Caption = 'Castle Spine Mixer'
-  ClientHeight = 601
+  ClientHeight = 581
   ClientWidth = 1040
   Menu = MainMenu
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
   Position = poDefault
+  LCLVersion = '2.3.0.0'
   WindowState = wsMaximized
   object Panel2: TPanel
     Left = 731
@@ -202,6 +203,7 @@ object FormMain: TFormMain
         Align = alLeft
         BorderSpacing.Left = 4
         Caption = '0.0'
+        Color = clDefault
         ParentColor = False
       end
     end
