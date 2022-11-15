@@ -156,10 +156,10 @@ begin
   // Render mixers
   Self.FrameTimeRecList.Clear;
   Self.PaintBoxTimeline.Canvas.Pen.Style := psSolid;
-  for I := AnimationItem.MixerList.Count - 1 downto 0 do
+  for I := 0 to AnimationItem.MixerList.Count - 1 do
   begin
     MixerItem := AnimationItem.MixerList.Items[I] as TCastleSpineMixerMixerItem;
-    Y := I * 40 + 70;
+    Y := (AnimationItem.MixerList.Count - I - 1) * 40 + 70;
     Self.PaintBoxTimeline.Canvas.Brush.Color := $D0D0D0;
     Self.PaintBoxTimeline.Canvas.FillRect(30, Y - 7, TimelineWidth - 30, Y + 7);
 
