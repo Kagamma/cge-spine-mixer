@@ -10,6 +10,7 @@ object FormAddMixer: TFormAddMixer
   FormStyle = fsStayOnTop
   OnShow = FormShow
   Position = poScreenCenter
+  LCLVersion = '2.3.0.0'
   object ButtonCancel: TBitBtn
     Left = 272
     Height = 30
@@ -38,7 +39,7 @@ object FormAddMixer: TFormAddMixer
     Top = 17
     Width = 500
     ItemHeight = 15
+    ReadOnly = True
     TabOrder = 2
-    Text = 'ComboBoxMixer'
   end
 end

@@ -6,9 +6,10 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ExtCtrls,
-  StdCtrls, Buttons, ComCtrls, Spin, CastleControl,
+  StdCtrls, Buttons, ComCtrls, Spin, CastleControl, LCLType,
   CastleApplicationProperties, CastleUIControls, CastleUIState, FileUtil,
   CastleSceneCore, CastleScene, CastleVectors, CastleSpineMixer, CastleSpine,
+  CastleViewport,
   Frame.Mixer,
   Frame.Viewer,
   Frame.Timeline;
@@ -16,6 +17,15 @@ uses
 type
 
   { TFormMain }
+
+  TStateMain = class(TUIState)
+  private
+  public
+    Spine: TCastleSpine;
+    Viewport: TCastleViewport;
+    constructor Create(AOwner: TComponent); override;
+    procedure Start; override;
+  end;
 
   TFormMain = class(TForm)
     ComboBoxAnimations: TComboBox;
@@ -49,6 +59,7 @@ type
     ButtonDeleteAnimation: TSpeedButton;
     Separator2: TMenuItem;
     ButtonPlay: TSpeedButton;
+    SpeedButton1: TSpeedButton;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
     TimerPlay: TTimer;
@@ -60,19 +71,21 @@ type
     procedure FloatTimeChange(Sender: TObject);
     procedure FloatZoomChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure MenuItemLoadMixerDataClick(Sender: TObject);
     procedure MenuItemLoadSpineModelClick(Sender: TObject);
     procedure MenuItemNewMixerDataClick(Sender: TObject);
     procedure MenuItemSaveMixerDataClick(Sender: TObject);
+    procedure SpeedButton1Click(Sender: TObject);
     procedure TimerPlayStartTimer(Sender: TObject);
     procedure TimerPlayTimer(Sender: TObject);
   private
-    StateMain: TUIState;
   public
     FrameMixer: TFrameMixer;
     FrameViewer: TFrameSpineViewer;
     FrameTimeline: TFrameTimeline;
     AnimationItem: TCastleSpineMixerAnimationItem;
+    StateMain: TStateMain;
     Ticks: QWord;
   end;
 
@@ -87,20 +100,17 @@ uses
   Form.NewAnimation,
   Form.RenameAnimation;
 
-type
-  TStateMain = class(TUIState)
-  private
-    FSpine: TCastleSpine;
-  public
-    constructor Create(AOwner: TComponent); override;
-  published
-    property Spine: TCastleSpine read FSpine write FSpine;
-  end;
-
 constructor TStateMain.Create(AOwner: TComponent);
 begin
   inherited;
   DesignUrl := 'castle-data:/ui.castle-user-interface';
+end;
+
+procedure TStateMain.Start;
+begin
+  inherited;
+  Self.Spine := DesignedComponent('Spine') as TCastleSpine;
+  Self.Viewport := DesignedComponent('Viewport') as TCastleViewport;
 end;
 
 { TFormMain }
@@ -114,16 +124,21 @@ begin
   PanelViewer.InsertControl(FrameViewer);
   //
   FrameTimeline := TFrameTimeline.Create(Self);
-  FrameTimeline.Zoom := 1;
-  FrameTimeline.FIsRepainted := True;
-  FrameTimeline.SelectedTime := -1;
-  FrameTimeline.PaintBoxTimeline.ControlStyle := FrameTimeline.PaintBoxTimeline.ControlStyle + [csOpaque];
   PanelTimeline.InsertControl(FrameTimeline);
   // Load viewer ui data
   TCastleControl.MainControl := FrameViewer.CastleControlViewer;
   FrameViewer.CastleControlViewer.Container.BackgroundColor := Vector4(0, 0, 0, 0);
   StateMain := TStateMain.Create(Self);
   TUIState.Current := StateMain;
+end;
+
+procedure TFormMain.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Key = VK_DELETE) and (Self.FrameTimeline.SelectedRec.AnchorItem <> nil) then
+  begin
+
+  end;
 end;
 
 procedure TFormMain.ButtonAddNewAnimationClick(Sender: TObject);
@@ -176,8 +191,10 @@ begin
     Self.FloatTime.Value := Self.AnimationItem.Duration;
   end;
   EditorSpineMixer.Time := 0;
-  LabelTime.Caption := FloatToStrF(EditorSpineMixer.Time, fffixed, 0, 3);
+  LabelTime.Caption := FloatToStrF(EditorSpineMixer.Time, ffFixed, 0, 3);
   ButtonPlay.ImageIndex := 2;
+  // Refresh mixer list
+  Self.FrameMixer.RefreshMixerList;
   // Redraw timeline
   Self.FrameTimeline.ForceRepaint;
 end;
@@ -216,7 +233,8 @@ begin
   if OpenDialogSpine.Execute then
   begin
     try
-      TStateMain(Self.StateMain).Spine.URL := OpenDialogSpine.FileName;
+      Self.StateMain.Spine.URL := OpenDialogSpine.FileName;
+      // Self.StateMain.Viewport.AssignDefaultCamera;
     except
       on E: Exception do
         ShowMessage(E.Message);
@@ -240,6 +258,11 @@ begin
   end;
 end;
 
+procedure TFormMain.SpeedButton1Click(Sender: TObject);
+begin
+  FrameMixer.MenuItemAddMixerClick(Sender);
+end;
+
 procedure TFormMain.TimerPlayStartTimer(Sender: TObject);
 begin
   EditorSpineMixer.Time := 0;
@@ -255,7 +278,7 @@ begin
   if EditorSpineMixer.Time > Self.AnimationItem.Duration then
     EditorSpineMixer.Time := 0;
   Ticks := GetTickCount64;
-  LabelTime.Caption := FloatToStrF(EditorSpineMixer.Time, fffixed, 0, 3);
+  LabelTime.Caption := FloatToStrF(EditorSpineMixer.Time, ffFixed, 0, 3);
   // Redraw timeline
   Self.FrameTimeline.Update;
 end;

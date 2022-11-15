@@ -41,7 +41,7 @@
             },
             "TranslationPersistent" : {
               "$$ClassName" : "TCastleVector3Persistent",
-              "Z" : 5.0000000000000000E+002
+              "Z" : 1.0000000000000000E+000
             }
           },
           {
@@ -70,7 +70,7 @@
         "Name" : "",
         "Orthographic" : {
           "$$ClassName" : "TCastleOrthographic",
-          "Height" : 1.2000000000000000E+003,
+          "Height" : 3.2619370117187500E+003,
           "OriginPersistent" : {
             "$$ClassName" : "TCastleVector2Persistent",
             "X" : 5.0000000000000000E-001,

@@ -2,10 +2,10 @@ object FrameMixerItem: TFrameMixerItem
   Left = 0
   Height = 68
   Top = 0
-  Width = 422
+  Width = 0
   Align = alTop
   ClientHeight = 68
-  ClientWidth = 422
+  ClientWidth = 0
   TabOrder = 0
   DesignLeft = 337
   DesignTop = 5
@@ -13,11 +13,11 @@ object FrameMixerItem: TFrameMixerItem
     Left = 0
     Height = 32
     Top = 0
-    Width = 422
+    Width = 0
     Align = alTop
     BevelOuter = bvNone
     ClientHeight = 32
-    ClientWidth = 422
+    ClientWidth = 0
     TabOrder = 0
     object LabelName: TLabel
       Left = 8
@@ -27,32 +27,34 @@ object FrameMixerItem: TFrameMixerItem
       Caption = 'LabelName'
       Color = clDefault
       ParentColor = False
+      Transparent = False
     end
   end
   object Panel2: TPanel
     Left = 0
     Height = 36
     Top = 32
-    Width = 422
+    Width = 0
     Align = alClient
     ClientHeight = 36
-    ClientWidth = 422
+    ClientWidth = 0
     TabOrder = 1
     object Panel3: TPanel
-      Left = 1
+      Left = 0
       Height = 34
       Top = 1
-      Width = 352
+      Width = 0
       Align = alClient
       ClientHeight = 34
-      ClientWidth = 352
+      ClientWidth = 0
       TabOrder = 0
       object TrackBarValue: TTrackBar
-        Left = 1
+        Left = 0
         Height = 32
         Top = 1
-        Width = 350
-        Max = 100
+        Width = 0
+        Frequency = 100
+        Max = 1000
         OnChange = TrackBarValueChange
         Position = 0
         Align = alClient
@@ -60,16 +62,16 @@ object FrameMixerItem: TFrameMixerItem
       end
     end
     object Panel4: TPanel
-      Left = 353
+      Left = -74
       Height = 34
       Top = 1
-      Width = 68
+      Width = 74
       Align = alRight
       ClientHeight = 34
-      ClientWidth = 68
+      ClientWidth = 74
       TabOrder = 1
       object ButtonDelete: TSpeedButton
-        Left = 40
+        Left = 48
         Height = 22
         Top = 0
         Width = 23
@@ -85,6 +87,7 @@ object FrameMixerItem: TFrameMixerItem
         Caption = '0'
         Color = clDefault
         ParentColor = False
+        Transparent = False
       end
     end
   end
