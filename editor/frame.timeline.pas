@@ -161,7 +161,7 @@ begin
     MixerItem := AnimationItem.MixerList.Items[I] as TCastleSpineMixerMixerItem;
     Y := (AnimationItem.MixerList.Count - I - 1) * 40 + 70;
     Self.PaintBoxTimeline.Canvas.Brush.Color := $D0D0D0;
-    Self.PaintBoxTimeline.Canvas.FillRect(30, Y - 7, TimelineWidth - 30, Y + 7);
+    Self.PaintBoxTimeline.Canvas.FillRect(30, Y - 9, TimelineWidth - 30, Y + 9);
 
     Self.PaintBoxTimeline.Canvas.Brush.Color := clWhite;
     S := MixerItem.Name;
@@ -172,10 +172,10 @@ begin
     begin
       AnchorItem := MixerItem.AnchorList.Items[J] as TCastleSpineMixerAnchorItem;
       X := Self.TimeToCoord(AnchorItem.Time);
-      Rec.X1 := X - 2;
-      Rec.Y1 := Y - 8;
-      Rec.X2 := X + 2;
-      Rec.Y2 := Y + 8;
+      Rec.X1 := X - 3;
+      Rec.Y1 := Y - 9;
+      Rec.X2 := X + 3;
+      Rec.Y2 := Y + 9;
       Rec.AnchorItem := AnchorItem;
       Rec.MixerItem := MixerItem;
       Self.FrameTimeRecList.Add(Rec);
@@ -184,7 +184,7 @@ begin
         Self.PaintBoxTimeline.Canvas.Brush.Color := clGreen
       else
         Self.PaintBoxTimeline.Canvas.Brush.Color := clRed;
-      Self.PaintBoxTimeline.Canvas.FillRect(X - 2, Y - 8, X + 2, Y + 8);
+      Self.PaintBoxTimeline.Canvas.FillRect(X - 3, Y - 9, X + 3, Y + 9);
     end;
     Self.PaintBoxTimeline.Canvas.Brush.Color := clWhite;
   end;
@@ -208,6 +208,8 @@ end;
 
 procedure TFrameTimeline.PaintBoxTimelineMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
+var
+  I: Integer;
 begin
   Self.MouseX := X;
   Self.MouseY := Y;
@@ -220,6 +222,13 @@ begin
       Self.SelectedTime := Self.CoordToTime(X);
     end else
       Self.SelectedTime := -1;
+    // Update mixer values on UI
+    for I := 0 to FormMain.FrameMixer.ScrollBoxMixer.ControlCount - 1 do
+    begin
+      TFrameMixerItem(FormMain.FrameMixer.ScrollBoxMixer.Controls[I]).IsManualUpdate := True;
+      TFrameMixerItem(FormMain.FrameMixer.ScrollBoxMixer.Controls[I]).TrackBarValueUpdate(Self.SelectedTime);
+      TFrameMixerItem(FormMain.FrameMixer.ScrollBoxMixer.Controls[I]).IsManualUpdate := False;
+    end;
   end;
 end;
 
