@@ -1,0 +1,10 @@
+slime.png
+size:1024,512
+filter:Linear,Linear
+pma:true
+eye_left
+bounds:468,344,96,139
+eye_right
+bounds:468,344,96,139
+head
+bounds:2,2,464,481
