@@ -42,15 +42,12 @@ procedure TFormAddMixer.AddFrameMixer(MixerItem: TCastleSpineMixerMixerItem);
 var
   FrameMixerItem: TFrameMixerItem;
 begin
-  if Self.ComboboxMixer.ItemIndex >= 0 then
-  begin
-    FrameMixerItem := TFrameMixerItem.Create(Self);
-    FrameMixerItem.Name := 'Mixer' + IntToStr(Random($FFFFFFFF)) + IntToStr(Random($FFFFFFFF)) + IntToStr(Random($FFFFFFFF));
-    FrameMixerItem.LabelName.Caption := MixerItem.Name;
-    FrameMixerItem.MixerOwner := FormMain.FrameMixer.ScrollBoxMixer;
-    FrameMixerItem.MixerItem := MixerItem;
-    FormMain.FrameMixer.ScrollBoxMixer.InsertControl(FrameMixerItem);
-  end;
+  FrameMixerItem := TFrameMixerItem.Create(Self);
+  FrameMixerItem.Name := 'Mixer' + IntToStr(Random($FFFFFFFF)) + IntToStr(Random($FFFFFFFF)) + IntToStr(Random($FFFFFFFF));
+  FrameMixerItem.LabelName.Caption := MixerItem.Name;
+  FrameMixerItem.MixerOwner := FormMain.FrameMixer.ScrollBoxMixer;
+  FrameMixerItem.MixerItem := MixerItem;
+  FormMain.FrameMixer.ScrollBoxMixer.InsertControl(FrameMixerItem);
 end;
 
 procedure TFormAddMixer.ButtonCancelClick(Sender: TObject);

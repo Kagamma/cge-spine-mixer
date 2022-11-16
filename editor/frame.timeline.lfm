@@ -1,24 +1,24 @@
 object FrameTimeline: TFrameTimeline
   Left = 0
-  Height = 320
+  Height = 341
   Top = 0
-  Width = 556
+  Width = 660
   Align = alClient
-  ClientHeight = 320
-  ClientWidth = 556
+  ClientHeight = 341
+  ClientWidth = 660
   TabOrder = 0
-  DesignLeft = 336
-  DesignTop = 4
+  DesignLeft = 335
+  DesignTop = 3
   object ScrollBoxTimeline: TScrollBox
     Left = 0
-    Height = 320
+    Height = 341
     Top = 0
-    Width = 556
+    Width = 660
     HorzScrollBar.Page = 50
     VertScrollBar.Page = 50
     Align = alClient
-    ClientHeight = 316
-    ClientWidth = 552
+    ClientHeight = 337
+    ClientWidth = 656
     TabOrder = 0
     object PaintBoxTimeline: TPaintBox
       Left = 0
@@ -36,9 +36,9 @@ object FrameTimeline: TFrameTimeline
   object ContextMenu: TPopupMenu
     Left = 56
     Top = 72
-    object MenuItemDeleteAnchor: TMenuItem
-      Caption = 'Delete Anchor'
-      OnClick = MenuItemDeleteAnchorClick
+    object MenuItemDeleteKey: TMenuItem
+      Caption = 'Delete Key'
+      OnClick = MenuItemDeleteKeyClick
     end
   end
 end

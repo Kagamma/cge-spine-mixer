@@ -12,18 +12,18 @@ type
   TFrameTimeRec = record
     X1, Y1, X2, Y2: Integer;
     MixerItem: TCastleSpineMixerMixerItem;
-    AnchorItem: TCastleSpineMixerAnchorItem;
+    KeyItem: TCastleSpineMixerKeyItem;
   end;
   TFrameTimeRecList = specialize TList<TFrameTimeRec>;
 
   { TFrameTimeline }
 
   TFrameTimeline = class(TFrame)
-    MenuItemDeleteAnchor: TMenuItem;
+    MenuItemDeleteKey: TMenuItem;
     PaintBoxTimeline: TPaintBox;
     ContextMenu: TPopupMenu;
     ScrollBoxTimeline: TScrollBox;
-    procedure MenuItemDeleteAnchorClick(Sender: TObject);
+    procedure MenuItemDeleteKeyClick(Sender: TObject);
     procedure PaintBoxTimelineMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure PaintBoxTimelineMouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -79,6 +79,8 @@ begin
 end;
 
 procedure TFrameTimeline.PaintBoxTimelinePaint(Sender: TObject);
+const
+  BAR_SIZE = 10;
 var
   I, J, X, Y: Integer;
   Modu: Integer = 5;
@@ -87,9 +89,10 @@ var
   TimelineWidth, TimelineHeight: Integer;
   S: String;
   MixerItem: TCastleSpineMixerMixerItem;
-  AnchorItem: TCastleSpineMixerAnchorItem;
+  KeyItem: TCastleSpineMixerKeyItem;
   Rec: TFrameTimeRec;
   IsHoverOnFrameTimeRec: Boolean = False;
+  IsFirstKey: Boolean;
 begin
   // Only render timeline if animation is available
   if FormMain.ComboBoxAnimations.ItemIndex < 0 then Exit;
@@ -131,7 +134,7 @@ begin
   // Render playing
   Self.PaintBoxTimeline.Canvas.Pen.Style := psSolid;
   Self.PaintBoxTimeline.Canvas.Pen.Color := clGreen;
-  X := Self.TimeToCoord(EditorSpineMixer.Time);
+  X := Self.TimeToCoord(EditorSpineMixer.Data.Time);
   Self.PaintBoxTimeline.Canvas.Line(X, 0, X, Self.PaintBoxTimeline.Height - 1);
 
   // Render selected coord
@@ -161,32 +164,46 @@ begin
     MixerItem := AnimationItem.MixerList.Items[I] as TCastleSpineMixerMixerItem;
     Y := (AnimationItem.MixerList.Count - I - 1) * 40 + 70;
     Self.PaintBoxTimeline.Canvas.Brush.Color := $D0D0D0;
-    Self.PaintBoxTimeline.Canvas.FillRect(30, Y - 9, TimelineWidth - 30, Y + 9);
+    Self.PaintBoxTimeline.Canvas.FillRect(30, Y - BAR_SIZE, TimelineWidth - 30, Y + BAR_SIZE);
 
     Self.PaintBoxTimeline.Canvas.Brush.Color := clWhite;
     S := MixerItem.Name;
     Self.PaintBoxTimeline.Canvas.TextOut(34, Y - Self.PaintBoxTimeline.Canvas.TextHeight(S) - 12, S);
 
-    // Render anchors
-    for J := 0 to MixerItem.AnchorList.Count - 1 do
+    // Render keys
+    IsFirstKey := True;
+    Self.PaintBoxTimeline.Canvas.Pen.Color := clGray;
+    for J := 0 to MixerItem.KeyList.Count - 1 do
     begin
-      AnchorItem := MixerItem.AnchorList.Items[J] as TCastleSpineMixerAnchorItem;
-      X := Self.TimeToCoord(AnchorItem.Time);
+      KeyItem := MixerItem.KeyList.Items[J] as TCastleSpineMixerKeyItem;
+      X := Self.TimeToCoord(KeyItem.Time);
       Rec.X1 := X - 3;
-      Rec.Y1 := Y - 9;
+      Rec.Y1 := Y - BAR_SIZE;
       Rec.X2 := X + 3;
-      Rec.Y2 := Y + 9;
-      Rec.AnchorItem := AnchorItem;
+      Rec.Y2 := Y + BAR_SIZE;
+      Rec.KeyItem := KeyItem;
       Rec.MixerItem := MixerItem;
       Self.FrameTimeRecList.Add(Rec);
-
-      if Rec.AnchorItem = Self.SelectedRec.AnchorItem then
+      
+      //
+      if Rec.KeyItem = Self.SelectedRec.KeyItem then
         Self.PaintBoxTimeline.Canvas.Brush.Color := clGreen
       else
         Self.PaintBoxTimeline.Canvas.Brush.Color := clRed;
-      Self.PaintBoxTimeline.Canvas.FillRect(X - 3, Y - 9, X + 3, Y + 9);
+      //
+      if IsFirstKey then
+        Self.PaintBoxTimeline.Canvas.MoveTo(X + 3, Y + BAR_SIZE - 1 - Round((BAR_SIZE * 2 - 2) * KeyItem.Value))
+      else
+      begin
+        Self.PaintBoxTimeline.Canvas.LineTo(X - 3, Y + BAR_SIZE - 1 - Round((BAR_SIZE * 2 - 2) * KeyItem.Value));
+        Self.PaintBoxTimeline.Canvas.MoveTo(X + 3, Y + BAR_SIZE - 1 - Round((BAR_SIZE * 2 - 2) * KeyItem.Value));
+      end;
+      //
+      Self.PaintBoxTimeline.Canvas.FillRect(X - 3, Y - BAR_SIZE, X + 3, Y + BAR_SIZE);
+      IsFirstKey := False;
     end;
     Self.PaintBoxTimeline.Canvas.Brush.Color := clWhite;
+    Self.PaintBoxTimeline.Canvas.Pen.Color := clBlack;
   end;
 
   // Render mouse hover
@@ -246,7 +263,7 @@ var
 begin
   if not Self.IsInsideFrameTimeRec(X, Y, Rec) then
   begin
-    Self.SelectedRec.AnchorItem := nil;
+    Self.SelectedRec.KeyItem := nil;
     if (X >= 30) and (X <= Self.PaintBoxTimeline.Width - 30) then
     begin
       Self.SelectedTime := Self.CoordToTime(X);
@@ -254,7 +271,7 @@ begin
       Self.SelectedTime := -1;
   end else
   begin
-    Self.SelectedTime := Rec.AnchorItem.Time;
+    Self.SelectedTime := Rec.KeyItem.Time;
     Self.SelectedRec := Rec;
     Self.ForceRepaint;
   end;
@@ -269,12 +286,12 @@ begin
   Self.FIsMouseDown := True;
 end;
 
-procedure TFrameTimeline.MenuItemDeleteAnchorClick(Sender: TObject);
+procedure TFrameTimeline.MenuItemDeleteKeyClick(Sender: TObject);
 begin
-  if Self.SelectedRec.AnchorItem <> nil then
+  if Self.SelectedRec.KeyItem <> nil then
   begin
-    Self.SelectedRec.MixerItem.DeleteAnchor(Self.SelectedRec.AnchorItem.Time);
-    Self.SelectedRec.AnchorItem := nil;
+    Self.SelectedRec.MixerItem.DeleteKey(Self.SelectedRec.KeyItem.Time);
+    Self.SelectedRec.KeyItem := nil;
     Self.ForceRepaint;
   end;
 end;

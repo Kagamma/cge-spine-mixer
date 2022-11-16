@@ -49,7 +49,7 @@ var
   I: Integer;
 begin
   try
-    EditorSpineMixer.RenameAnimation(FormMain.ComboBoxAnimations.ItemIndex, EditAnimationName.Text);
+    EditorSpineMixer.Data.RenameAnimation(FormMain.ComboBoxAnimations.ItemIndex, EditAnimationName.Text);
     // Refresh animation combobox
     FormMain.ComboBoxAnimations.Items[FormMain.ComboBoxAnimations.ItemIndex] := EditAnimationName.Text;
     //

@@ -9,7 +9,7 @@ uses
   StdCtrls, Buttons, ComCtrls, Spin, CastleControl, LCLType,
   CastleApplicationProperties, CastleUIControls, CastleUIState, FileUtil,
   CastleSceneCore, CastleScene, CastleVectors, CastleSpineMixer, CastleSpine,
-  CastleViewport,
+  CastleViewport, CastleComponentSerialize,
   Frame.Mixer,
   Frame.Viewer,
   Frame.Timeline;
@@ -111,13 +111,16 @@ begin
   inherited;
   Self.Spine := DesignedComponent('Spine') as TCastleSpine;
   Self.Viewport := DesignedComponent('Viewport') as TCastleViewport;
-  //Self.Spine.AddBehavior(EditorSpineMixer);
+  Self.Spine.AddBehavior(EditorSpineMixer);
 end;
 
 { TFormMain }
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
+  EditorSpineMixer := TCastleSpineMixerBehavior.Create(Self);
+  EditorSpineMixer.Data := TCastleSpineMixerData.Create(EditorSpineMixer);
+  //
   FrameMixer := TFrameMixer.Create(Self);
   PanelMixer.InsertControl(FrameMixer);
   //
@@ -136,7 +139,7 @@ end;
 procedure TFormMain.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if (Key = VK_DELETE) and (Self.FrameTimeline.SelectedRec.AnchorItem <> nil) then
+  if (Key = VK_DELETE) and (Self.FrameTimeline.SelectedRec.KeyItem <> nil) then
   begin
 
   end;
@@ -153,7 +156,7 @@ begin
     if MessageDlg('Deletion', 'Do you want to delete "' + Self.ComboBoxAnimations.Items[Self.ComboBoxAnimations.ItemIndex] + '" animation?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
     begin
       try
-        EditorSpineMixer.DeleteAnimation(Self.ComboBoxAnimations.ItemIndex);
+        EditorSpineMixer.Data.DeleteAnimation(Self.ComboBoxAnimations.ItemIndex);
         // Refresh combobox animation
         Self.ComboBoxAnimations.Items.Delete(Self.ComboBoxAnimations.ItemIndex);
         Self.ComboBoxAnimations.Text := '';
@@ -190,9 +193,10 @@ begin
     Self.AnimationItem := TCastleSpineMixerAnimationItem(Self.ComboBoxAnimations.Items.Objects[Self.ComboBoxAnimations.ItemIndex]);
     // Reflect time value
     Self.FloatTime.Value := Self.AnimationItem.Duration;
-  end;
-  EditorSpineMixer.Time := 0;
-  LabelTime.Caption := FloatToStrF(EditorSpineMixer.Time, ffFixed, 0, 3);
+  end else
+    Self.AnimationItem := nil;
+  EditorSpineMixer.Data.Time := 0;
+  LabelTime.Caption := FloatToStrF(EditorSpineMixer.Data.Time, ffFixed, 0, 3);
   ButtonPlay.ImageIndex := 2;
   // Refresh mixer list
   Self.FrameMixer.RefreshMixerList;
@@ -225,7 +229,17 @@ procedure TFormMain.MenuItemLoadMixerDataClick(Sender: TObject);
 begin
   if OpenDialogMixer.Execute then
   begin
-
+    // Delete old mixer data
+    FreeAndNil(EditorSpineMixer);
+    // Create new mixer data
+    EditorSpineMixer := TCastleSpineMixerBehavior.Create(Self);
+    EditorSpineMixer.Data := ComponentLoad(OpenDialogMixer.FileName, EditorSpineMixer) as TCastleSpineMixerData;
+    //
+    Self.FrameViewer.Spine.AddBehavior(EditorSpineMixer);
+    //                          
+    FormNewAnimation.RefreshAnimation;
+    Self.ComboBoxAnimations.ItemIndex := 0;
+    Self.ComboBoxAnimationsChange(Sender);
   end;
 end;
 
@@ -235,7 +249,7 @@ begin
   begin
     try
       Self.StateMain.Spine.URL := OpenDialogSpine.FileName;
-      // Self.StateMain.Viewport.AssignDefaultCamera;
+      Self.StateMain.Viewport.AssignDefaultCamera;
     except
       on E: Exception do
         ShowMessage(E.Message);
@@ -249,15 +263,20 @@ begin
   FreeAndNil(EditorSpineMixer);
   // Create new mixer data
   EditorSpineMixer := TCastleSpineMixerBehavior.Create(Self);
+  EditorSpineMixer.Data := TCastleSpineMixerData.Create(EditorSpineMixer);
   //
   Self.FrameViewer.Spine.AddBehavior(EditorSpineMixer);
+  //
+  FormNewAnimation.RefreshAnimation;
+  Self.ComboBoxAnimations.ItemIndex := -1;
+  Self.ComboBoxAnimationsChange(Sender);
 end;
 
 procedure TFormMain.MenuItemSaveMixerDataClick(Sender: TObject);
 begin
   if SaveDialogMixer.Execute then
   begin
-
+    ComponentSave(EditorSpineMixer.Data, SaveDialogMixer.FileName);
   end;
 end;
 
@@ -268,7 +287,7 @@ end;
 
 procedure TFormMain.TimerPlayStartTimer(Sender: TObject);
 begin
-  EditorSpineMixer.Time := 0;
+  EditorSpineMixer.Data.Time := 0;
   Ticks := GetTickCount64;
 end;
 
@@ -277,20 +296,14 @@ var
   Dt: Single;
 begin
   Dt := (GetTickCount64 - Ticks) / 1000;
-  EditorSpineMixer.Time := EditorSpineMixer.Time + Dt;
-  if EditorSpineMixer.Time > Self.AnimationItem.Duration then
-    EditorSpineMixer.Time := 0;
+  EditorSpineMixer.Data.Time := EditorSpineMixer.Data.Time + Dt;
+  if EditorSpineMixer.Data.Time > Self.AnimationItem.Duration then
+    EditorSpineMixer.Data.Time := 0;
   Ticks := GetTickCount64;
-  LabelTime.Caption := FloatToStrF(EditorSpineMixer.Time, ffFixed, 0, 3);
+  LabelTime.Caption := FloatToStrF(EditorSpineMixer.Data.Time, ffFixed, 0, 3);
   // Redraw timeline
   Self.FrameTimeline.Update;
 end;
-
-initialization
-  EditorSpineMixer := TCastleSpineMixerBehavior.Create(nil);
-
-finalization
-  FreeAndNil(EditorSpineMixer);
 
 end.
 

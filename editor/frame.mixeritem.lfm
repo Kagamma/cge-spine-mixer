@@ -2,10 +2,10 @@ object FrameMixerItem: TFrameMixerItem
   Left = 0
   Height = 68
   Top = 0
-  Width = 0
+  Width = 320
   Align = alTop
   ClientHeight = 68
-  ClientWidth = 0
+  ClientWidth = 320
   TabOrder = 0
   DesignLeft = 337
   DesignTop = 5

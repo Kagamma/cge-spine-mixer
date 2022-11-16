@@ -45,10 +45,11 @@ begin
   for I := Self.ScrollBoxMixer.ControlCount - 1 downto 0 do
     Self.ScrollBoxMixer.Controls[I].Free;
   // Readd mixer list
-  for I := 0 to FormMain.AnimationItem.MixerList.Count - 1 do
-  begin
-    FormAddMixer.AddFrameMixer(FormMain.AnimationItem.MixerList.Items[I] as TCastleSpineMixerMixerItem);
-  end;
+  if FormMain.AnimationItem <> nil then
+    for I := 0 to FormMain.AnimationItem.MixerList.Count - 1 do
+    begin
+      FormAddMixer.AddFrameMixer(FormMain.AnimationItem.MixerList.Items[I] as TCastleSpineMixerMixerItem);
+    end;
 end;
 
 end.

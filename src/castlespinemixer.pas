@@ -13,17 +13,17 @@ uses
   CastleTransform;
 
 type
-  TCastleSpineMixerAnchorItem = class(TCollectionItem)
+  TCastleSpineMixerKeyItem = class(TCollectionItem)
   private
-    FTime: Single; // Anchor time
-    FValue: Single; // Anchor value
+    FTime: Single; // Key time
+    FValue: Single; // Key value
   public
   published
     property Time: Single read FTime write FTime;
     property Value: Single read FValue write FValue;
   end;
 
-  TCastleSpineMixerAnchorList = class(TCollection)
+  TCastleSpineMixerKeyList = class(TCollection)
   private
   public
   published
@@ -32,16 +32,16 @@ type
   TCastleSpineMixerMixerItem = class(TCollectionItem)
   private
     FName: String; // Mixer name
-    FAnchorList: TCastleSpineMixerAnchorList; // List of anchors
+    FKeyList: TCastleSpineMixerKeyList; // List of Keys
   public
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
-    function AddAnchor(ATime, AValue: Single): TCastleSpineMixerAnchorItem;
-    procedure DeleteAnchor(ATime: Single);
+    function AddKey(ATime, AValue: Single): TCastleSpineMixerKeyItem;
+    procedure DeleteKey(ATime: Single);
     function GetValue(ATime: Single): Single;
   published
     property Name: String read FName write FName;  
-    property AnchorList: TCastleSpineMixerAnchorList read FAnchorList;
+    property KeyList: TCastleSpineMixerKeyList read FKeyList;
   end;
 
   TCastleSpineMixerMixerList = class(TCollection)
@@ -76,11 +76,10 @@ type
   published
   end;
 
-  TCastleSpineMixerBehavior = class(TCastleBehavior)
+  TCastleSpineMixerData = class(TComponent)
   private
     FAnimationList: TCastleSpineMixerAnimationList; // List of animations
     FTime: Single;
-    FURL: String;
     procedure SetTime(const ATime: Single);
   public
     constructor Create(AOwner: TComponent); override;
@@ -94,6 +93,15 @@ type
   published
     property AnimationList: TCastleSpineMixerAnimationList read FAnimationList;
     property Time: Single read FTime write SetTime;
+  end;
+
+  TCastleSpineMixerBehavior = class(TCastleBehavior)
+  private
+    FData: TCastleSpineMixerData;
+    FURL: String;
+  public
+    property Data: TCastleSpineMixerData read FData write FData;
+  published
     property URL: String read FURL write FURL;
   end;
 
@@ -110,18 +118,18 @@ begin
   Result := X1 + T * (X2 - X1);
 end;
 
-// ----- TCastleSpineMixerAnchorItem -----
+// ----- TCastleSpineMixerKeyItem -----
 
-// ----- TCastleSpineMixerAnchorList -----
+// ----- TCastleSpineMixerKeyList -----
 
 // ----- TCastleSpineMixerMixerItem -----
 
-function DoAnchorCompare(Item1, Item2: TCollectionItem): Integer;
+function DoKeyCompare(Item1, Item2: TCollectionItem): Integer;
 begin
-  if TCastleSpineMixerAnchorItem(Item1).Time < TCastleSpineMixerAnchorItem(Item2).Time then
+  if TCastleSpineMixerKeyItem(Item1).Time < TCastleSpineMixerKeyItem(Item2).Time then
     Result := -1
   else
-  if TCastleSpineMixerAnchorItem(Item1).Time > TCastleSpineMixerAnchorItem(Item2).Time then
+  if TCastleSpineMixerKeyItem(Item1).Time > TCastleSpineMixerKeyItem(Item2).Time then
     Result := 1
   else
     Result := 0;
@@ -130,44 +138,44 @@ end;
 constructor TCastleSpineMixerMixerItem.Create(ACollection: TCollection);
 begin
   inherited;
-  Self.FAnchorList := TCastleSpineMixerAnchorList.Create(TCastleSpineMixerAnchorItem);
+  Self.FKeyList := TCastleSpineMixerKeyList.Create(TCastleSpineMixerKeyItem);
 end;
 
 destructor TCastleSpineMixerMixerItem.Destroy;
 begin
-  Self.FAnchorList.Free;
+  Self.FKeyList.Free;
   inherited;
 end;
 
-function TCastleSpineMixerMixerItem.AddAnchor(ATime, AValue: Single): TCastleSpineMixerAnchorItem;
+function TCastleSpineMixerMixerItem.AddKey(ATime, AValue: Single): TCastleSpineMixerKeyItem;
 var
   I: Integer;
 begin
   Result := nil;
-  for I := 0 to Self.FAnchorList.Count - 1 do
+  for I := 0 to Self.FKeyList.Count - 1 do
   begin
-    if TCastleSpineMixerAnchorItem(Self.FAnchorList.Items[I]).Time = ATime then
+    if TCastleSpineMixerKeyItem(Self.FKeyList.Items[I]).Time = ATime then
     begin
-      Result := Self.FAnchorList.Items[I] as TCastleSpineMixerAnchorItem;
+      Result := Self.FKeyList.Items[I] as TCastleSpineMixerKeyItem;
       break;
     end;
   end;
   if Result = nil then
-    Result := Self.FAnchorList.Add as TCastleSpineMixerAnchorItem;
+    Result := Self.FKeyList.Add as TCastleSpineMixerKeyItem;
   Result.Time := ATime;
   Result.Value := AValue;
-  Self.FAnchorList.Sort(@DoAnchorCompare);
+  Self.FKeyList.Sort(@DoKeyCompare);
 end;
 
-procedure TCastleSpineMixerMixerItem.DeleteAnchor(ATime: Single);
+procedure TCastleSpineMixerMixerItem.DeleteKey(ATime: Single);
 var
   I: Integer;
 begin
-  for I := 0 to Self.FAnchorList.Count - 1 do
+  for I := 0 to Self.FKeyList.Count - 1 do
   begin
-    if TCastleSpineMixerAnchorItem(Self.FAnchorList.Items[I]).Time = ATime then
+    if TCastleSpineMixerKeyItem(Self.FKeyList.Items[I]).Time = ATime then
     begin
-      Self.FAnchorList.Items[I].Free;
+      Self.FKeyList.Items[I].Free;
       break;
     end;
   end;
@@ -176,30 +184,30 @@ end;
 function TCastleSpineMixerMixerItem.GetValue(ATime: Single): Single;
 var
   I: Integer;
-  PrevAnchor,
-  NextAnchor: TCastleSpineMixerAnchorItem;
+  PrevKey,
+  NextKey: TCastleSpineMixerKeyItem;
 begin
-  PrevAnchor := nil;
-  NextAnchor := nil;
+  PrevKey := nil;
+  NextKey := nil;
   Result := 0;
-  for I := 0 to Self.FAnchorList.Count - 1 do
+  for I := 0 to Self.FKeyList.Count - 1 do
   begin
-    NextAnchor := Self.FAnchorList.Items[I] as TCastleSpineMixerAnchorItem;
-    if NextAnchor.Time <= ATime then
-      PrevAnchor := NextAnchor
+    NextKey := Self.FKeyList.Items[I] as TCastleSpineMixerKeyItem;
+    if NextKey.Time <= ATime then
+      PrevKey := NextKey
     else
-    if NextAnchor.Time > ATime then
+    if NextKey.Time > ATime then
       break;
   end;
-  if (NextAnchor <> nil) and (PrevAnchor <> nil) then
+  if (NextKey <> nil) and (PrevKey <> nil) then
   begin
-    if PrevAnchor.Time = NextAnchor.Time then
-      Result := NextAnchor.Value
+    if PrevKey.Time = NextKey.Time then
+      Result := NextKey.Value
     else
-      Result := Lerp(PrevAnchor.Value, NextAnchor.Value, (ATime - PrevAnchor.Time) / (NextAnchor.Time - PrevAnchor.Time));
+      Result := Lerp(PrevKey.Value, NextKey.Value, (ATime - PrevKey.Time) / (NextKey.Time - PrevKey.Time));
   end else
-  if (NextAnchor <> nil) and (PrevAnchor = nil) then
-    Result := NextAnchor.Value;
+  if (NextKey <> nil) and (PrevKey = nil) then
+    Result := NextKey.Value;
 end;
 
 // ----- TCastleSpineMixerMixerList -----
@@ -256,27 +264,27 @@ begin
   inherited;
 end;
 
-// ----- TCastleSpineMixerBehavior -----
+// ----- TCastleSpineMixerData -----
 
-procedure TCastleSpineMixerBehavior.SetTime(const ATime: Single);
+procedure TCastleSpineMixerData.SetTime(const ATime: Single);
 begin
   Self.FTime := Max(0, ATime);
 end;
 
-constructor TCastleSpineMixerBehavior.Create(AOwner: TComponent);
+constructor TCastleSpineMixerData.Create(AOwner: TComponent);
 begin
   inherited;
   Self.FAnimationList := TCastleSpineMixerAnimationList.Create(TCastleSpineMixerAnimationItem);
   Self.FTime := 0;
 end;
 
-destructor TCastleSpineMixerBehavior.Destroy;
+destructor TCastleSpineMixerData.Destroy;
 begin
   Self.FAnimationList.Free;
   inherited;
 end;
 
-function TCastleSpineMixerBehavior.AddAnimation(AnimationName: String): TCastleSpineMixerAnimationItem;
+function TCastleSpineMixerData.AddAnimation(AnimationName: String): TCastleSpineMixerAnimationItem;
 var
   I: Integer;
 begin
@@ -287,7 +295,7 @@ begin
   Result.Name := AnimationName;
 end;
 
-procedure TCastleSpineMixerBehavior.RenameAnimation(AIndex: Cardinal; AnimationName: String);
+procedure TCastleSpineMixerData.RenameAnimation(AIndex: Cardinal; AnimationName: String);
 var
   Animation: TCastleSpineMixerAnimationItem;
   I: Integer;
@@ -301,7 +309,7 @@ begin
   Animation.Name := AnimationName;
 end;
 
-procedure TCastleSpineMixerBehavior.DeleteAnimation(AIndex: Cardinal);
+procedure TCastleSpineMixerData.DeleteAnimation(AIndex: Cardinal);
 begin
   if AIndex > Self.FAnimationList.Count - 1 then
     raise Exception.Create('List out of bound');
@@ -310,6 +318,7 @@ end;
 
 initialization
   RegisterSerializableComponent(TCastleSpineMixerBehavior, 'Spine Mixer Behavior');
+  RegisterSerializableComponent(TCastleSpineMixerData, 'Spine Mixer Data');
   {$ifdef CASTLE_DESIGN_MODE}
   RegisterPropertyEditor(TypeInfo(AnsiString), TCastleSpineMixerBehavior, 'URL',
     TSceneURLPropertyEditor);

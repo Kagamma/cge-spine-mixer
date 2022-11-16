@@ -59,7 +59,7 @@ begin
   // Add time / value pair
   if FormMain.FrameTimeline.SelectedTime >= 0 then
   begin
-    MixerItem.AddAnchor(FormMain.FrameTimeline.SelectedTime, V);
+    MixerItem.AddKey(FormMain.FrameTimeline.SelectedTime, V);
   end;
 end;
 
