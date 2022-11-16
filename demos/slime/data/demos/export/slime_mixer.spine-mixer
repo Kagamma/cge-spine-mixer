@@ -1,0 +1,81 @@
+{
+  "$$ClassName" : "TCastleSpineMixerData",
+  "AnimationList" : [
+    {
+      "$$ClassName" : "TCastleSpineMixerAnimationItem",
+      "Duration" : 1.0000000000000000E+000,
+      "MixerList" : [
+        {
+          "$$ClassName" : "TCastleSpineMixerMixerItem",
+          "KeyList" : [
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem"
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 3.1000000238418579E-001,
+              "Value" : 1.0000000000000000E+000
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 6.2300002574920654E-001
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 1.0000000000000000E+000,
+              "Value" : 1.0000000000000000E+000
+            }
+          ],
+          "Name" : "blink"
+        },
+        {
+          "$$ClassName" : "TCastleSpineMixerMixerItem",
+          "KeyList" : [
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem"
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 5.3299999237060547E-001,
+              "Value" : 1.0000000000000000E+000
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 1.0000000000000000E+000
+            }
+          ],
+          "Name" : "idle"
+        },
+        {
+          "$$ClassName" : "TCastleSpineMixerMixerItem",
+          "KeyList" : [
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem"
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 1.1999999731779099E-001
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 3.0700001120567322E-001,
+              "Value" : 4.9000000953674316E-001
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 7.9900002479553223E-001,
+              "Value" : 4.9000000953674316E-001
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 1.0000000000000000E+000
+            }
+          ],
+          "Name" : "peak"
+        }
+      ],
+      "Name" : "Animation"
+    }
+  ],
+  "Name" : ""
+}

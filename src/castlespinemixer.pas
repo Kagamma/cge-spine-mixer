@@ -10,7 +10,7 @@ uses
   PropEdits, CastlePropEdits, CastleDebugTransform, Forms, Controls, Graphics, Dialogs,
   ButtonPanel, StdCtrls, ExtCtrls, CastleInternalExposeTransformsDialog,
   {$endif}
-  CastleTransform;
+  CastleTransform, CastleSpine, spine, CastleClassUtils;
 
 type
   TCastleSpineMixerKeyItem = class(TCollectionItem)
@@ -79,8 +79,6 @@ type
   TCastleSpineMixerData = class(TComponent)
   private
     FAnimationList: TCastleSpineMixerAnimationList; // List of animations
-    FTime: Single;
-    procedure SetTime(const ATime: Single);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -90,19 +88,43 @@ type
     procedure RenameAnimation(AIndex: Cardinal; AnimationName: String);
     { Delete animation }
     procedure DeleteAnimation(AIndex: Cardinal);
+    { Find animation }
+    function FindAnimation(AnimationName: String): TCastleSpineMixerAnimationItem;
   published
     property AnimationList: TCastleSpineMixerAnimationList read FAnimationList;
-    property Time: Single read FTime write SetTime;
   end;
 
   TCastleSpineMixerBehavior = class(TCastleBehavior)
   private
     FData: TCastleSpineMixerData;
     FURL: String;
+    FTime: Single;
+    { True = playing animation }
+    FIsPlaying: Boolean;
+    { Reference to current animation }
+    FCurrentAnimationItem: TCastleSpineMixerAnimationItem;
+    { }
+    FIsCheckAutoAnimation: Boolean;
+    FAutoAnimation: String;
+    procedure SetTime(const ATime: Single);
+    procedure SetSetAutoAnimation(const AAnimation: String);
+    procedure LoadData(const AURL: String);
+  protected
+    procedure Update(const SecondsPassed: Single; var RemoveMe: TRemoveType); override;
   public
+    {$ifdef CASTLE_DESIGN_MODE}
+    function PropertySections(const PropertyName: String): TPropertySections; override;
+    {$endif}
+    function PlayAnimation(const AnimationName: String): Boolean;     
+    procedure StopAnimation;
+    { This mainly use to set initial pose based on time value }
+    procedure SetInitialPose(const AnimationName: String);
+
     property Data: TCastleSpineMixerData read FData write FData;
+    property Time: Single read FTime write SetTime;
   published
-    property URL: String read FURL write FURL;
+    property URL: String read FURL write LoadData;
+    property AutoAnimation: String read FAutoAnimation write SetSetAutoAnimation;
   end;
 
 var
@@ -117,6 +139,44 @@ function Lerp(const X1, X2, T: Single): Single; inline;
 begin
   Result := X1 + T * (X2 - X1);
 end;
+
+{ ----- TExposeTransformsPropertyEditor ----- }
+
+{$ifdef CASTLE_DESIGN_MODE}
+type
+  { Property editor to select an animation on TCastleSceneCore. }
+  TSceneAutoAnimationPropertyEditor = class(TStringPropertyEditor)
+  public
+    function GetAttributes: TPropertyAttributes; override;
+    procedure GetValues(Proc: TGetStrProc); override;
+    procedure SetValue(const NewValue: String); override;
+  end;
+
+function TSceneAutoAnimationPropertyEditor.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paMultiSelect, paValueList, paSortList, paRevertable];
+end;
+
+procedure TSceneAutoAnimationPropertyEditor.GetValues(Proc: TGetStrProc);
+var
+  Mixer: TCastleSpineMixerBehavior;
+  I: Integer;
+begin
+  Proc('');
+  Mixer := GetComponent(0) as TCastleSpineMixerBehavior;
+  for I := 0 to Mixer.Data.AnimationList.Count - 1 do
+    Proc(TCastleSpineMixerAnimationItem(Mixer.Data.AnimationList.Items[I]).Name);
+end;
+
+procedure TSceneAutoAnimationPropertyEditor.SetValue(const NewValue: String);
+var
+  Mixer: TCastleSpineMixerBehavior;
+begin
+  inherited SetValue(NewValue);
+  Mixer := GetComponent(0) as TCastleSpineMixerBehavior;
+  Mixer.AutoAnimation := NewValue;
+end;
+{$endif}
 
 // ----- TCastleSpineMixerKeyItem -----
 
@@ -266,16 +326,10 @@ end;
 
 // ----- TCastleSpineMixerData -----
 
-procedure TCastleSpineMixerData.SetTime(const ATime: Single);
-begin
-  Self.FTime := Max(0, ATime);
-end;
-
 constructor TCastleSpineMixerData.Create(AOwner: TComponent);
 begin
   inherited;
   Self.FAnimationList := TCastleSpineMixerAnimationList.Create(TCastleSpineMixerAnimationItem);
-  Self.FTime := 0;
 end;
 
 destructor TCastleSpineMixerData.Destroy;
@@ -285,12 +339,9 @@ begin
 end;
 
 function TCastleSpineMixerData.AddAnimation(AnimationName: String): TCastleSpineMixerAnimationItem;
-var
-  I: Integer;
 begin
-  for I := 0 to Self.FAnimationList.Count - 1 do
-    if TCastleSpineMixerAnimationItem(Self.FAnimationList.Items[I]).Name = AnimationName then
-      raise Exception.Create('Duplicate animations are not allowed');
+  if Self.FindAnimation(AnimationName) <> nil then
+    raise Exception.Create('Duplicate animations are not allowed');
   Result := Self.FAnimationList.Add as TCastleSpineMixerAnimationItem;
   Result.Name := AnimationName;
 end;
@@ -316,12 +367,230 @@ begin
   Self.FAnimationList.Items[AIndex].Free;
 end;
 
+function TCastleSpineMixerData.FindAnimation(AnimationName: String): TCastleSpineMixerAnimationItem;
+var
+  I: Integer;
+begin
+  for I := 0 to Self.FAnimationList.Count - 1 do
+    if TCastleSpineMixerAnimationItem(Self.FAnimationList.Items[I]).Name = AnimationName then
+      Exit(TCastleSpineMixerAnimationItem(Self.FAnimationList.Items[I]));
+  Result := nil;
+end;
+
+// ----- TCastleSpineMixerBehavior -----
+
+{$ifdef CASTLE_DESIGN_MODE}
+function TCastleSpineMixerBehavior.PropertySections(
+  const PropertyName: String): TPropertySections;
+begin
+  if (PropertyName = 'URL')
+    or (PropertyName = 'AutoAnimation')then
+    Result := [psBasic]
+  else
+    Result := inherited PropertySections(PropertyName);
+end;
+{$endif}
+
+procedure TCastleSpineMixerBehavior.SetTime(const ATime: Single);
+begin
+  Self.FTime := Max(0, ATime);
+end;
+
+procedure TCastleSpineMixerBehavior.LoadData(const AURL: String);
+begin
+  Self.FURL := AURL;
+  if Self.FData <> nil then
+    FreeAndNil(Self.FData);
+  if AURL <> '' then
+  begin
+    Self.FData := ComponentLoad(AURL, Self) as TCastleSpineMixerData;
+  end;
+  Self.FIsCheckAutoAnimation := True;
+end;
+
+procedure TCastleSpineMixerBehavior.SetSetAutoAnimation(const AAnimation: String);
+begin
+  Self.FAutoAnimation := AAnimation;
+  Self.FIsCheckAutoAnimation := True;
+end;
+
+procedure TCastleSpineMixerBehavior.Update(const SecondsPassed: Single; var RemoveMe: TRemoveType);
+var
+  Spine: TCastleSpine;
+  I, J, Track: Integer;
+  MixerItem: TCastleSpineMixerMixerItem;
+  Params: TCastleSpinePlayAnimationParameters;  
+  TrackEntry: PspTrackEntry;
+begin
+  inherited;
+  if not (Self.Parent is TCastleSpine) then Exit;
+  //
+  Spine := TCastleSpine(Self.Parent);
+  if not Spine.IsGLContextInitialized then Exit;
+  //
+  if Self.FIsCheckAutoAnimation then
+  begin
+    Self.PlayAnimation(Self.FAutoAnimation);
+    FIsCheckAutoAnimation := False;
+  end;
+  if not Self.FIsPlaying then Exit;
+
+  // Recalculate initial time again
+  Track := 0;
+  for I := 0 to Self.FCurrentAnimationItem.MixerList.Count - 1 do
+  begin
+    MixerItem := TCastleSpineMixerMixerItem(Self.FCurrentAnimationItem.MixerList.Items[I]);
+    for J := 0 to Spine.AnimationsList.Count - 1 do
+    begin
+      // Found animation
+      if MixerItem.Name = Spine.AnimationsList[J] then
+      begin
+        TrackEntry := Spine.TrackEntries[Track];
+        TrackEntry^.trackTime := TrackEntry^.animation^.duration * MixerItem.GetValue(Self.FTime);
+        Inc(Track);
+      end;
+    end;
+  end;
+  //
+  Self.FTime := Self.FTime + SecondsPassed * Spine.TimePlayingSpeed;
+  if Self.FTime > Self.FCurrentAnimationItem.Duration then
+    Self.FTime := 0;
+end;
+
+function TCastleSpineMixerBehavior.PlayAnimation(const AnimationName: String): Boolean;
+var
+  Spine: TCastleSpine;
+  I, J, Track: Integer;
+  MixerItem: TCastleSpineMixerMixerItem;
+  Params: TCastleSpinePlayAnimationParameters;
+begin
+  if not (Self.Parent is TCastleSpine) then Exit;
+  if AnimationName = '' then
+  begin
+    Self.StopAnimation;
+    Exit;
+  end;
+  //
+  Spine := TCastleSpine(Self.Parent);
+  Self.FCurrentAnimationItem := Self.Data.FindAnimation(AnimationName);
+  if Self.FCurrentAnimationItem <> nil then
+  begin
+    Self.FTime := 0;
+    Self.FIsPlaying := True;
+    // Stop current animations
+    Spine.StopAnimation;
+    // Loop through list of mixers and check it with spine animation, if available, we play it
+    Track := 0;
+    for I := 0 to Self.FCurrentAnimationItem.MixerList.Count - 1 do
+    begin
+      MixerItem := TCastleSpineMixerMixerItem(Self.FCurrentAnimationItem.MixerList.Items[I]);
+      for J := 0 to Spine.AnimationsList.Count - 1 do
+      begin
+        // Found animation
+        if MixerItem.Name = Spine.AnimationsList[J] then
+        begin
+          // Mark it as playing
+          // TODO: Proper handle play animation, instead of hard setting
+          Params.Name := MixerItem.Name;
+          Params.TransitionDuration := 0;
+          Params.Track := Track;
+          Params.Forward := True;
+          Params.InitialTime := Self.FTime * MixerItem.GetValue(Self.FTime);
+          Params.TimeScale := 0;
+          Params.Loop := True;
+          Spine.PlayAnimation(Params);
+          Inc(Track);
+        end;
+      end;
+    end;
+    // Force spine to start animating immediately
+    Spine.InternalPlayAnimation;
+    //
+    Result := True;
+  end else
+  begin
+    Self.FIsPlaying := False;
+    Result := False;
+  end;
+end;
+
+procedure TCastleSpineMixerBehavior.StopAnimation; 
+var
+  Spine: TCastleSpine;
+begin
+  if not (Self.Parent is TCastleSpine) then Exit;
+  //      
+  Spine := TCastleSpine(Self.Parent);
+  Spine.StopAnimation;
+  Self.FIsPlaying := False;
+end;
+
+procedure TCastleSpineMixerBehavior.SetInitialPose(const AnimationName: String);
+var
+  Spine: TCastleSpine;
+  I, J, Track: Integer;
+  Params: TCastleSpinePlayAnimationParameters;
+  TrackEntry: PspTrackEntry;
+  MixerItem: TCastleSpineMixerMixerItem;
+begin
+  inherited;
+  if not (Self.Parent is TCastleSpine) then Exit;
+  //
+  Self.FIsPlaying := False;
+  Spine := TCastleSpine(Self.Parent);
+  Self.FCurrentAnimationItem := Self.Data.FindAnimation(AnimationName);
+  if Self.FCurrentAnimationItem = nil then Exit;
+  // Loop through list of mixers and check it with spine animation, if available, we play it
+  Track := 0;
+  for I := 0 to Self.FCurrentAnimationItem.MixerList.Count - 1 do
+  begin
+    MixerItem := TCastleSpineMixerMixerItem(Self.FCurrentAnimationItem.MixerList.Items[I]);
+    for J := 0 to Spine.AnimationsList.Count - 1 do
+    begin
+      // Found animation
+      if MixerItem.Name = Spine.AnimationsList[J] then
+      begin
+        // Mark it as playing
+        Params.Name := MixerItem.Name;
+        Params.TransitionDuration := 0;
+        Params.Track := Track;
+        Params.Forward := False;
+        Params.InitialTime := Self.FTime * MixerItem.GetValue(Self.FTime);
+        Params.TimeScale := 0;
+        Params.Loop := True;
+        Spine.PlayAnimation(Params);
+        Inc(Track);
+      end;
+    end;
+  end;
+  // Force spine to start animating immediately
+  Spine.InternalPlayAnimation;
+  // Recalculate initial time again
+  Track := 0;
+  for I := 0 to Self.FCurrentAnimationItem.MixerList.Count - 1 do
+  begin
+    MixerItem := TCastleSpineMixerMixerItem(Self.FCurrentAnimationItem.MixerList.Items[I]);
+    for J := 0 to Spine.AnimationsList.Count - 1 do
+    begin
+      // Found animation
+      if MixerItem.Name = Spine.AnimationsList[J] then
+      begin
+        TrackEntry := Spine.TrackEntries[Track];
+        TrackEntry^.trackTime := TrackEntry^.animation^.duration * MixerItem.GetValue(Self.FTime);
+        Inc(Track);
+      end;
+    end;
+  end;
+end;
+
 initialization
   RegisterSerializableComponent(TCastleSpineMixerBehavior, 'Spine Mixer Behavior');
   RegisterSerializableComponent(TCastleSpineMixerData, 'Spine Mixer Data');
   {$ifdef CASTLE_DESIGN_MODE}
   RegisterPropertyEditor(TypeInfo(AnsiString), TCastleSpineMixerBehavior, 'URL',
     TSceneURLPropertyEditor);
+  RegisterPropertyEditor(TypeInfo(AnsiString), TCastleSpineMixerBehavior, 'AutoAnimation',
+    TSceneAutoAnimationPropertyEditor);
   {$endif}
 
 end.

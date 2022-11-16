@@ -31,9 +31,11 @@ type
     ComboBoxAnimations: TComboBox;
     FloatZoom: TFloatSpinEdit;
     FloatTime: TFloatSpinEdit;
+    FloatSpeed: TFloatSpinEdit;
     ImageList: TImageList;
     Label1: TLabel;
     Label2: TLabel;
+    Label3: TLabel;
     LabelTime: TLabel;
     MainMenu: TMainMenu;
     MenuItemNewMixerData: TMenuItem;
@@ -68,6 +70,7 @@ type
     procedure ButtonPlayClick(Sender: TObject);
     procedure ButtonRenameAnimationClick(Sender: TObject);
     procedure ComboBoxAnimationsChange(Sender: TObject);
+    procedure FloatSpeedChange(Sender: TObject);
     procedure FloatTimeChange(Sender: TObject);
     procedure FloatZoomChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -163,10 +166,18 @@ procedure TFormMain.ButtonPlayClick(Sender: TObject);
 begin
   if Self.ComboBoxAnimations.ItemIndex >= 0 then
     TimerPlay.Enabled := not TimerPlay.Enabled;
-  if TimerPlay.Enabled then
-    ButtonPlay.ImageIndex := 16
-  else
+  if (TimerPlay.Enabled) and (Self.AnimationItem <> nil) then
+  begin
+    ButtonPlay.ImageIndex := 16;
+    EditorSpineMixer.PlayAnimation(Self.AnimationItem.Name);
+  end else
+  begin
     ButtonPlay.ImageIndex := 2;
+    EditorSpineMixer.StopAnimation;
+    if Self.AnimationItem <> nil then
+      EditorSpineMixer.SetInitialPose(Self.AnimationItem.Name);
+  end;
+  Self.FrameTimeline.ForceRepaint;
 end;
 
 procedure TFormMain.ButtonRenameAnimationClick(Sender: TObject);
@@ -185,13 +196,18 @@ begin
     Self.FloatTime.Value := Self.AnimationItem.Duration;
   end else
     Self.AnimationItem := nil;
-  EditorSpineMixer.Data.Time := 0;
-  LabelTime.Caption := FloatToStrF(EditorSpineMixer.Data.Time, ffFixed, 0, 3);
+  EditorSpineMixer.Time := 0;
+  LabelTime.Caption := FloatToStrF(EditorSpineMixer.Time, ffFixed, 0, 3);
   ButtonPlay.ImageIndex := 2;
   // Refresh mixer list
   Self.FrameMixer.RefreshMixerList;
   // Redraw timeline
   Self.FrameTimeline.ForceRepaint;
+end;
+
+procedure TFormMain.FloatSpeedChange(Sender: TObject);
+begin
+  Self.StateMain.Spine.TimePlayingSpeed := FloatSpeed.Value;
 end;
 
 procedure TFormMain.FloatTimeChange(Sender: TObject);
@@ -207,7 +223,7 @@ end;
 
 procedure TFormMain.FloatZoomChange(Sender: TObject);
 begin
-  if Self.ComboBoxAnimations.ItemIndex >= 0 then
+if Self.ComboBoxAnimations.ItemIndex >= 0 then
   begin
     Self.FrameTimeline.Zoom := FloatZoom.Value;
     // Redraw timeline
@@ -219,13 +235,8 @@ procedure TFormMain.MenuItemLoadMixerDataClick(Sender: TObject);
 begin
   if OpenDialogMixer.Execute then
   begin
-    // Delete old mixer data
-    FreeAndNil(EditorSpineMixer);
-    // Create new mixer data
-    EditorSpineMixer := TCastleSpineMixerBehavior.Create(Self);
-    EditorSpineMixer.Data := ComponentLoad(OpenDialogMixer.FileName, EditorSpineMixer) as TCastleSpineMixerData;
-    //
-    Self.FrameViewer.Spine.AddBehavior(EditorSpineMixer);
+    // Load new mixer data
+    EditorSpineMixer.URL := OpenDialogMixer.FileName;
     //                          
     FormNewAnimation.RefreshAnimation;
     Self.ComboBoxAnimations.ItemIndex := 0;
@@ -255,7 +266,7 @@ begin
   EditorSpineMixer := TCastleSpineMixerBehavior.Create(Self);
   EditorSpineMixer.Data := TCastleSpineMixerData.Create(EditorSpineMixer);
   //
-  Self.FrameViewer.Spine.AddBehavior(EditorSpineMixer);
+  Self.StateMain.Spine.AddBehavior(EditorSpineMixer);
   //
   FormNewAnimation.RefreshAnimation;
   Self.ComboBoxAnimations.ItemIndex := -1;
@@ -277,22 +288,15 @@ end;
 
 procedure TFormMain.TimerPlayStartTimer(Sender: TObject);
 begin
-  EditorSpineMixer.Data.Time := 0;
+  EditorSpineMixer.Time := 0;
   Ticks := GetTickCount64;
 end;
 
 procedure TFormMain.TimerPlayTimer(Sender: TObject);
-var
-  Dt: Single;
 begin
-  Dt := (GetTickCount64 - Ticks) / 1000;
-  EditorSpineMixer.Data.Time := EditorSpineMixer.Data.Time + Dt;
-  if EditorSpineMixer.Data.Time > Self.AnimationItem.Duration then
-    EditorSpineMixer.Data.Time := 0;
-  Ticks := GetTickCount64;
-  LabelTime.Caption := FloatToStrF(EditorSpineMixer.Data.Time, ffFixed, 0, 3);
+  LabelTime.Caption := FloatToStrF(EditorSpineMixer.Time, ffFixed, 0, 3);
   // Redraw timeline
-  Self.FrameTimeline.Update;
+  Self.FrameTimeline.ForceRepaint;
 end;
 
 end.

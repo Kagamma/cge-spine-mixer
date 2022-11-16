@@ -48,6 +48,7 @@ begin
   FrameMixerItem.MixerOwner := FormMain.FrameMixer.ScrollBoxMixer;
   FrameMixerItem.MixerItem := MixerItem;
   FormMain.FrameMixer.ScrollBoxMixer.InsertControl(FrameMixerItem);
+  FormMain.FrameTimeline.ForceRepaint;
 end;
 
 procedure TFormAddMixer.ButtonCancelClick(Sender: TObject);

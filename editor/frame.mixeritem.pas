@@ -60,13 +60,17 @@ begin
   if FormMain.FrameTimeline.SelectedTime >= 0 then
   begin
     MixerItem.AddKey(FormMain.FrameTimeline.SelectedTime, V);
+    EditorSpineMixer.SetInitialPose(FormMain.AnimationItem.Name);
   end;
+  FormMain.FrameTimeline.ForceRepaint;
 end;
 
 procedure TFrameMixerItem.ButtonDeleteClick(Sender: TObject);
 begin
   Self.MixerOwner.RemoveControl(Self);
   FormMain.AnimationItem.DeleteMixer(Self.MixerItem);
+  FormMain.FrameTimeline.ForceRepaint;
+  EditorSpineMixer.SetInitialPose(FormMain.AnimationItem.Name);
 end;
 
 procedure TFrameMixerItem.TrackBarValueUpdate(ATime: Single);

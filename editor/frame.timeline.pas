@@ -72,6 +72,7 @@ begin
   Self.SelectedTime := -1;
   Self.PaintBoxTimeline.ControlStyle := Self.PaintBoxTimeline.ControlStyle + [csOpaque];
   Self.FrameTimeRecList := TFrameTimeRecList.Create;
+  Self.PaintBoxTimeline.CanFocus;
   Self.PaintBoxTimeline.OnKeyDown := @Self.FormKeyDown;
 end;
 
@@ -137,7 +138,7 @@ begin
   // Render playing
   Self.PaintBoxTimeline.Canvas.Pen.Style := psSolid;
   Self.PaintBoxTimeline.Canvas.Pen.Color := clGreen;
-  X := Self.TimeToCoord(EditorSpineMixer.Data.Time);
+  X := Self.TimeToCoord(EditorSpineMixer.Time);
   Self.PaintBoxTimeline.Canvas.Line(X, 0, X, Self.PaintBoxTimeline.Height - 1);
 
   // Render selected coord
@@ -179,6 +180,8 @@ begin
     for J := 0 to MixerItem.KeyList.Count - 1 do
     begin
       KeyItem := MixerItem.KeyList.Items[J] as TCastleSpineMixerKeyItem;
+      if KeyItem.Time > AnimationItem.Duration then
+        Break;
       X := Self.TimeToCoord(KeyItem.Time);
       Rec.X1 := X - 3;
       Rec.Y1 := Y - BAR_SIZE;
@@ -231,6 +234,8 @@ procedure TFrameTimeline.PaintBoxTimelineMouseMove(Sender: TObject;
 var
   I: Integer;
 begin
+  if (X < 30) or (X > Self.PaintBoxTimeline.Width - 30) then
+    Exit;
   Self.MouseX := X;
   Self.MouseY := Y;
   if not FormMain.TimerPlay.Enabled then
@@ -240,8 +245,15 @@ begin
     if (X >= 30) and (X <= Self.PaintBoxTimeline.Width - 30) then
     begin
       Self.SelectedTime := Self.CoordToTime(X);
+      EditorSpineMixer.Time := Self.SelectedTime;
+      EditorSpineMixer.SetInitialPose(FormMain.AnimationItem.Name);
     end else
       Self.SelectedTime := -1;
+    // If there's a selected key, move it around
+    if Self.SelectedRec.KeyItem <> nil then
+    begin
+      Self.SelectedRec.KeyItem.Time := Self.SelectedTime;
+    end;
     // Update mixer values on UI
     for I := 0 to FormMain.FrameMixer.ScrollBoxMixer.ControlCount - 1 do
     begin
@@ -264,12 +276,15 @@ var
   Rec: TFrameTimeRec;
   I: Integer;
 begin
+  Self.PaintBoxTimeline.SetFocus;
   if not Self.IsInsideFrameTimeRec(X, Y, Rec) then
   begin
     Self.SelectedRec.KeyItem := nil;
     if (X >= 30) and (X <= Self.PaintBoxTimeline.Width - 30) then
     begin
       Self.SelectedTime := Self.CoordToTime(X);
+      EditorSpineMixer.Time := Self.SelectedTime;
+      EditorSpineMixer.SetInitialPose(FormMain.AnimationItem.Name);
     end else
       Self.SelectedTime := -1;
   end else
@@ -340,6 +355,7 @@ begin
     Self.SelectedRec.MixerItem.DeleteKey(Self.SelectedRec.KeyItem.Time);
     Self.SelectedRec.KeyItem := nil;
     Self.ForceRepaint;
+    EditorSpineMixer.SetInitialPose(FormMain.AnimationItem.Name);
   end;
 end;
 

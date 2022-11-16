@@ -18,7 +18,6 @@ type
   private
 
   public
-    Spine: TCastleSpine;
   end;
 
 implementation
