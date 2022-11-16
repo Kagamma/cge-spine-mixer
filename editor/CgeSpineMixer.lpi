@@ -121,6 +121,13 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Form.AddMixer"/>
       </Unit>
+      <Unit>
+        <Filename Value="form.curveeditor.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormCurveEditor"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Form.CurveEditor"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -136,9 +143,13 @@
     </SearchPaths>
     <CodeGeneration>
       <TargetOS Value="win64"/>
+      <Optimizations>
+        <OptimizationLevel Value="2"/>
+      </Optimizations>
     </CodeGeneration>
     <Linking>
       <Debugging>
+        <GenerateDebugInfo Value="False"/>
         <DebugInfoType Value="dsDwarf3"/>
       </Debugging>
       <Options>

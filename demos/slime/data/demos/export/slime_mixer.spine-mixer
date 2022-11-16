@@ -13,17 +13,21 @@
             },
             {
               "$$ClassName" : "TCastleSpineMixerKeyItem",
-              "Time" : 3.1000000238418579E-001,
+              "Time" : 7.9999998211860657E-002,
               "Value" : 1.0000000000000000E+000
             },
             {
               "$$ClassName" : "TCastleSpineMixerKeyItem",
-              "Time" : 6.2300002574920654E-001
+              "Time" : 1.4800000190734863E-001,
+              "Value" : 1.0000000000000000E+000
             },
             {
               "$$ClassName" : "TCastleSpineMixerKeyItem",
-              "Time" : 1.0000000000000000E+000,
-              "Value" : 1.0000000000000000E+000
+              "Time" : 2.1400000154972076E-001
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 1.0000000000000000E+000
             }
           ],
           "Name" : "blink"
@@ -32,11 +36,13 @@
           "$$ClassName" : "TCastleSpineMixerMixerItem",
           "KeyList" : [
             {
-              "$$ClassName" : "TCastleSpineMixerKeyItem"
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Kind" : "mktBezier"
             },
             {
               "$$ClassName" : "TCastleSpineMixerKeyItem",
-              "Time" : 5.3299999237060547E-001,
+              "Kind" : "mktBezier",
+              "Time" : 4.9599999189376831E-001,
               "Value" : 1.0000000000000000E+000
             },
             {
@@ -54,27 +60,133 @@
             },
             {
               "$$ClassName" : "TCastleSpineMixerKeyItem",
-              "Time" : 1.1999999731779099E-001
+              "Time" : 3.1099998950958252E-001,
+              "Value" : 1.0000000000000000E+000
             },
             {
               "$$ClassName" : "TCastleSpineMixerKeyItem",
-              "Time" : 3.0700001120567322E-001,
-              "Value" : 4.9000000953674316E-001
-            },
-            {
-              "$$ClassName" : "TCastleSpineMixerKeyItem",
-              "Time" : 7.9900002479553223E-001,
-              "Value" : 4.9000000953674316E-001
+              "Time" : 6.6299998760223389E-001,
+              "Value" : 1.0000000000000000E+000
             },
             {
               "$$ClassName" : "TCastleSpineMixerKeyItem",
               "Time" : 1.0000000000000000E+000
             }
           ],
-          "Name" : "peak"
+          "Name" : "look_right"
         }
       ],
       "Name" : "Animation"
+    },
+    {
+      "$$ClassName" : "TCastleSpineMixerAnimationItem",
+      "Duration" : 3.0000000000000000E+000,
+      "MixerList" : [
+        {
+          "$$ClassName" : "TCastleSpineMixerMixerItem",
+          "KeyList" : [
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem"
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 2.5000000000000000E-001,
+              "Value" : 1.0000000000000000E+000
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 2.0000000000000000E+000,
+              "Value" : 1.0000000000000000E+000
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 3.0000000000000000E+000
+            }
+          ],
+          "Name" : "squeeze"
+        },
+        {
+          "$$ClassName" : "TCastleSpineMixerMixerItem",
+          "KeyList" : [
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem"
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 6.5600001811981201E-001
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 7.2000002861022949E-001,
+              "Value" : 1.0000000000000000E+000
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 7.9000002145767212E-001,
+              "Value" : 1.0000000000000000E+000
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 8.5000002384185791E-001
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 1.0620000362396240E+000
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 1.1180000305175781E+000,
+              "Value" : 1.0000000000000000E+000
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 1.1799999475479126E+000,
+              "Value" : 1.0000000000000000E+000
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 1.2300000190734863E+000
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 3.0000000000000000E+000
+            }
+          ],
+          "Name" : "blink"
+        },
+        {
+          "$$ClassName" : "TCastleSpineMixerMixerItem",
+          "KeyList" : [
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem"
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 8.8400000333786011E-001
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 1.0579999685287476E+000,
+              "Value" : 1.0000000000000000E+000
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 2.2079999446868896E+000,
+              "Value" : 1.0000000000000000E+000
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 2.6879999637603760E+000
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 3.0000000000000000E+000
+            }
+          ],
+          "Name" : "look_right"
+        }
+      ],
+      "Name" : "Animation 2"
     }
   ],
   "Name" : ""

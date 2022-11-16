@@ -66,6 +66,7 @@ type
     SpeedButton1: TSpeedButton;
     ButtonLinear: TSpeedButton;
     ButtonBezier: TSpeedButton;
+    ButtonEditCurve: TSpeedButton;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
     TimerUpdate: TTimer;
@@ -86,6 +87,7 @@ type
     procedure MenuItemNewMixerDataClick(Sender: TObject);
     procedure MenuItemSaveMixerDataClick(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
+    procedure ButtonEditCurveClick(Sender: TObject);
     procedure TimerPlayStartTimer(Sender: TObject);
     procedure TimerPlayTimer(Sender: TObject);
     procedure TimerUpdateTimer(Sender: TObject);
@@ -108,7 +110,8 @@ implementation
 
 uses
   Form.NewAnimation,
-  Form.RenameAnimation;
+  Form.RenameAnimation,
+  Form.CurveEditor;
 
 constructor TStateMain.Create(AOwner: TComponent);
 begin
@@ -154,6 +157,7 @@ end;
 procedure TFormMain.ButtonBezierClick(Sender: TObject);
 begin
   Self.FrameTimeline.SelectedRec.KeyItem.Kind := mktBezier;
+  Self.FrameTimeline.ForceRepaint;
 end;
 
 procedure TFormMain.ButtonDeleteAnimationClick(Sender: TObject);
@@ -178,6 +182,7 @@ end;
 procedure TFormMain.ButtonLinearClick(Sender: TObject);
 begin
   Self.FrameTimeline.SelectedRec.KeyItem.Kind := mktLinear;
+  Self.FrameTimeline.ForceRepaint;
 end;
 
 procedure TFormMain.ButtonPlayClick(Sender: TObject);
@@ -279,15 +284,14 @@ begin
 end;
 
 procedure TFormMain.MenuItemNewMixerDataClick(Sender: TObject);
+var
+  I: Integer;
 begin
-  // Delete old mixer data
-  FreeAndNil(EditorSpineMixer);
   // Create new mixer data
-  EditorSpineMixer := TCastleSpineMixerBehavior.Create(Self);
+  EditorSpineMixer.Data.Free;
   EditorSpineMixer.Data := TCastleSpineMixerData.Create(EditorSpineMixer);
   //
-  Self.StateMain.Spine.AddBehavior(EditorSpineMixer);
-  //
+  EditorSpineMixer.Time := 0;
   FormNewAnimation.RefreshAnimation;
   Self.ComboBoxAnimations.ItemIndex := -1;
   Self.ComboBoxAnimationsChange(Sender);
@@ -304,6 +308,13 @@ end;
 procedure TFormMain.SpeedButton1Click(Sender: TObject);
 begin
   FrameMixer.MenuItemAddMixerClick(Sender);
+end;
+
+procedure TFormMain.ButtonEditCurveClick(Sender: TObject);
+begin
+  FormCurveEditor.ControlPoints[0] := Vector2(Self.FrameTimeline.SelectedRec.KeyItem.CX1, Self.FrameTimeline.SelectedRec.KeyItem.CY1);       
+  FormCurveEditor.ControlPoints[1] := Vector2(Self.FrameTimeline.SelectedRec.KeyItem.CX2, Self.FrameTimeline.SelectedRec.KeyItem.CY2);
+  FormCurveEditor.Show;
 end;
 
 procedure TFormMain.TimerPlayStartTimer(Sender: TObject);
@@ -326,9 +337,15 @@ begin
     Self.PanelMixerItemKind.Visible := True;
     case Self.FrameTimeline.SelectedRec.KeyItem.Kind of
       mktBezier:
-        LabelKind.Caption := 'Bezier';
+        begin
+          LabelKind.Caption := 'Bezier';
+          Self.ButtonEditCurve.Enabled := True;
+        end
       else
-        LabelKind.Caption := 'Linear';
+        begin
+          LabelKind.Caption := 'Linear';
+          Self.ButtonEditCurve.Enabled := False;
+        end;
     end;
   end else
   begin

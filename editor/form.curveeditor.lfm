@@ -1,0 +1,47 @@
+object FormCurveEditor: TFormCurveEditor
+  Left = 386
+  Height = 380
+  Top = 31
+  Width = 332
+  BorderStyle = bsDialog
+  Caption = 'Curve Editor'
+  ClientHeight = 380
+  ClientWidth = 332
+  FormStyle = fsStayOnTop
+  OnShow = FormShow
+  Position = poScreenCenter
+  object PanelCurveEditor: TPanel
+    Left = 10
+    Height = 300
+    Top = 11
+    Width = 300
+    BevelOuter = bvNone
+    TabOrder = 0
+    OnMouseDown = FormMouseDown
+    OnMouseMove = FormMouseMove
+    OnMouseUp = FormMouseUp
+    OnPaint = PanelCurveEditorPaint
+  end
+  object ButtonOk: TBitBtn
+    Left = 192
+    Height = 30
+    Top = 336
+    Width = 120
+    Caption = 'Ok'
+    Images = FormMain.ImageList
+    ImageIndex = 11
+    OnClick = ButtonOkClick
+    TabOrder = 1
+  end
+  object ButtonCancel: TBitBtn
+    Left = 64
+    Height = 30
+    Top = 336
+    Width = 120
+    Caption = 'Cancel'
+    Images = FormMain.ImageList
+    ImageIndex = 10
+    OnClick = ButtonCancelClick
+    TabOrder = 2
+  end
+end

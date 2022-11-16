@@ -98,6 +98,7 @@ var
   IsHoverOnFrameTimeRec: Boolean = False;
   IsFirstKey: Boolean;
 begin
+  inherited;
   // Only render timeline if animation is available
   if FormMain.ComboBoxAnimations.ItemIndex < 0 then Exit;
   //
@@ -176,7 +177,6 @@ begin
 
     // Render keys
     IsFirstKey := True;
-    Self.PaintBoxTimeline.Canvas.Pen.Color := clGray;
     for J := 0 to MixerItem.KeyList.Count - 1 do
     begin
       KeyItem := MixerItem.KeyList.Items[J] as TCastleSpineMixerKeyItem;
@@ -203,6 +203,12 @@ begin
       begin
         Self.PaintBoxTimeline.Canvas.LineTo(X - 3, Y + BAR_SIZE - 1 - Round((BAR_SIZE * 2 - 2) * KeyItem.Value));
         Self.PaintBoxTimeline.Canvas.MoveTo(X + 3, Y + BAR_SIZE - 1 - Round((BAR_SIZE * 2 - 2) * KeyItem.Value));
+      end;
+      case KeyItem.Kind of
+        mktBezier:
+          Self.PaintBoxTimeline.Canvas.Pen.Color := clYellow;
+        else
+          Self.PaintBoxTimeline.Canvas.Pen.Color := clGray;
       end;
       //
       Self.PaintBoxTimeline.Canvas.FillRect(X - 3, Y - BAR_SIZE, X + 3, Y + BAR_SIZE);
