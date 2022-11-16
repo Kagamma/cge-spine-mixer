@@ -36,6 +36,7 @@ type
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
+    LabelKind: TLabel;
     LabelTime: TLabel;
     MainMenu: TMainMenu;
     MenuItemNewMixerData: TMenuItem;
@@ -45,6 +46,7 @@ type
     MenuItemLoadSpineModel: TMenuItem;
     OpenDialogMixer: TOpenDialog;
     OpenDialogSpine: TOpenDialog;
+    PanelMixerItemKind: TPanel;
     PanelViewer: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
@@ -62,11 +64,16 @@ type
     Separator2: TMenuItem;
     ButtonPlay: TSpeedButton;
     SpeedButton1: TSpeedButton;
+    ButtonLinear: TSpeedButton;
+    ButtonBezier: TSpeedButton;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
+    TimerUpdate: TTimer;
     TimerPlay: TTimer;
     procedure ButtonAddNewAnimationClick(Sender: TObject);
+    procedure ButtonBezierClick(Sender: TObject);
     procedure ButtonDeleteAnimationClick(Sender: TObject);
+    procedure ButtonLinearClick(Sender: TObject);
     procedure ButtonPlayClick(Sender: TObject);
     procedure ButtonRenameAnimationClick(Sender: TObject);
     procedure ComboBoxAnimationsChange(Sender: TObject);
@@ -81,6 +88,7 @@ type
     procedure SpeedButton1Click(Sender: TObject);
     procedure TimerPlayStartTimer(Sender: TObject);
     procedure TimerPlayTimer(Sender: TObject);
+    procedure TimerUpdateTimer(Sender: TObject);
   private
   public
     FrameMixer: TFrameMixer;
@@ -143,6 +151,11 @@ begin
   FormNewAnimation.Show;
 end;
 
+procedure TFormMain.ButtonBezierClick(Sender: TObject);
+begin
+  Self.FrameTimeline.SelectedRec.KeyItem.Kind := mktBezier;
+end;
+
 procedure TFormMain.ButtonDeleteAnimationClick(Sender: TObject);
 begin
   if Self.ComboBoxAnimations.ItemIndex >= 0 then
@@ -160,6 +173,11 @@ begin
           ShowMessage(E.Message);
       end;
     end;
+end;
+
+procedure TFormMain.ButtonLinearClick(Sender: TObject);
+begin
+  Self.FrameTimeline.SelectedRec.KeyItem.Kind := mktLinear;
 end;
 
 procedure TFormMain.ButtonPlayClick(Sender: TObject);
@@ -182,6 +200,8 @@ end;
 
 procedure TFormMain.ButtonRenameAnimationClick(Sender: TObject);
 begin
+  if Self.AnimationItem = nil then Exit;
+  FormRenameAnimation.EditAnimationName.Text := Self.AnimationItem.Name;
   FormRenameAnimation.Show;
 end;
 
@@ -297,6 +317,23 @@ begin
   LabelTime.Caption := FloatToStrF(EditorSpineMixer.Time, ffFixed, 0, 3);
   // Redraw timeline
   Self.FrameTimeline.ForceRepaint;
+end;
+
+procedure TFormMain.TimerUpdateTimer(Sender: TObject);
+begin
+  if Self.FrameTimeline.SelectedRec.KeyItem <> nil then
+  begin
+    Self.PanelMixerItemKind.Visible := True;
+    case Self.FrameTimeline.SelectedRec.KeyItem.Kind of
+      mktBezier:
+        LabelKind.Caption := 'Bezier';
+      else
+        LabelKind.Caption := 'Linear';
+    end;
+  end else
+  begin
+    Self.PanelMixerItemKind.Visible := False;
+  end;
 end;
 
 end.

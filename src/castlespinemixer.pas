@@ -10,17 +10,30 @@ uses
   PropEdits, CastlePropEdits, CastleDebugTransform, Forms, Controls, Graphics, Dialogs,
   ButtonPanel, StdCtrls, ExtCtrls, CastleInternalExposeTransformsDialog,
   {$endif}
-  CastleTransform, CastleSpine, spine, CastleClassUtils;
+  CastleTransform, CastleSpine, spine, CastleClassUtils, CastleCurves;
 
 type
+  TCastleSpineMixerKeyType = (mktLinear, mktBezier);
+
   TCastleSpineMixerKeyItem = class(TCollectionItem)
   private
     FTime: Single; // Key time
     FValue: Single; // Key value
+    FKind: TCastleSpineMixerKeyType;
+    FCX1, FCY1, FCX2, FCY2: Single;
+    FIsBezierCached: Boolean;
+    FBezierCurvePoints: array[0..19] of Single;
+    function GetBezierValue(const T: Single): Single;
   public
+    constructor Create(ACollection: TCollection); override;
   published
     property Time: Single read FTime write FTime;
     property Value: Single read FValue write FValue;
+    property Kind: TCastleSpineMixerKeyType read FKind write FKind;
+    property CX1: Single read FCX1 write FCX1;
+    property CY1: Single read FCY1 write FCY1;
+    property CX2: Single read FCX2 write FCX2;
+    property CY2: Single read FCY2 write FCY2;
   end;
 
   TCastleSpineMixerKeyList = class(TCollection)
@@ -135,6 +148,9 @@ implementation
 uses
   Math;
 
+var
+  BezierCurvePoints: array[0..19] of Single;
+
 function Lerp(const X1, X2, T: Single): Single; inline;
 begin
   Result := X1 + T * (X2 - X1);
@@ -179,6 +195,44 @@ end;
 {$endif}
 
 // ----- TCastleSpineMixerKeyItem -----
+
+function TCastleSpineMixerKeyItem.GetBezierValue(const T: Single): Single;
+var
+  I: Integer;
+  F: Single;
+  ControlPoints: TCubicBezier2DPoints;
+begin
+  if not Self.FIsBezierCached then
+  begin
+    ControlPoints[0] := Vector2(0, 0);
+    ControlPoints[1] := Vector2(Self.FCX1, Self.FCY1);
+    ControlPoints[2] := Vector2(Self.FCX2, Self.FCY2);
+    ControlPoints[3] := Vector2(1, 1);
+    for I := 0 to High(BezierCurvePoints) do
+    begin
+      Self.FBezierCurvePoints[I] := CubicBezier2D(I / High(Self.FBezierCurvePoints), ControlPoints).Y;
+    end;
+  end;
+  I := Floor(T * 20);
+  F := Frac(T * 20);
+  if I < High(Self.FBezierCurvePoints) then
+  begin
+    Result := Lerp(Self.FBezierCurvePoints[I], Self.FBezierCurvePoints[I + 1], F);
+  end else
+  begin
+    Result := 1;
+  end;
+end;
+
+constructor TCastleSpineMixerKeyItem.Create(ACollection: TCollection);
+begin
+  inherited;
+  Self.FCX1 := 0.5;
+  Self.FCY1 := 0;
+  Self.FCX2 := 0.5;
+  Self.FCY2 := 1;
+  Self.FIsBezierCached := False;
+end;
 
 // ----- TCastleSpineMixerKeyList -----
 
@@ -246,6 +300,7 @@ var
   I: Integer;
   PrevKey,
   NextKey: TCastleSpineMixerKeyItem;
+  T: Single;
 begin
   PrevKey := nil;
   NextKey := nil;
@@ -264,7 +319,17 @@ begin
     if PrevKey.Time = NextKey.Time then
       Result := NextKey.Value
     else
-      Result := Lerp(PrevKey.Value, NextKey.Value, (ATime - PrevKey.Time) / (NextKey.Time - PrevKey.Time));
+    begin
+      case PrevKey.Kind of
+        mktBezier:
+          begin
+            T := PrevKey.GetBezierValue((ATime - PrevKey.Time) / (NextKey.Time - PrevKey.Time));
+            Result := Lerp(PrevKey.Value, NextKey.Value, T);
+          end
+        else
+          Result := Lerp(PrevKey.Value, NextKey.Value, (ATime - PrevKey.Time) / (NextKey.Time - PrevKey.Time));
+      end;
+    end;
   end else
   if (NextKey <> nil) and (PrevKey = nil) then
     Result := NextKey.Value;
@@ -582,6 +647,9 @@ begin
     end;
   end;
 end;
+
+var
+  I: Integer;
 
 initialization
   RegisterSerializableComponent(TCastleSpineMixerBehavior, 'Spine Mixer Behavior');
