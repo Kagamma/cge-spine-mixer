@@ -8,7 +8,6 @@ object FormMain: TFormMain
   ClientWidth = 1056
   Menu = MainMenu
   OnCreate = FormCreate
-  OnKeyDown = FormKeyDown
   Position = poDefault
   LCLVersion = '2.3.0.0'
   WindowState = wsMaximized

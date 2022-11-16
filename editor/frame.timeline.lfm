@@ -1,32 +1,32 @@
 object FrameTimeline: TFrameTimeline
   Left = 0
-  Height = 341
+  Height = 317
   Top = 0
-  Width = 660
+  Width = 503
   Align = alClient
-  ClientHeight = 341
-  ClientWidth = 660
+  ClientHeight = 317
+  ClientWidth = 503
   TabOrder = 0
   DesignLeft = 335
   DesignTop = 3
   object ScrollBoxTimeline: TScrollBox
     Left = 0
-    Height = 341
+    Height = 317
     Top = 0
-    Width = 660
-    HorzScrollBar.Page = 50
+    Width = 503
     VertScrollBar.Page = 50
     Align = alClient
-    ClientHeight = 337
-    ClientWidth = 656
+    ClientHeight = 313
+    ClientWidth = 499
     TabOrder = 0
-    object PaintBoxTimeline: TPaintBox
-      Left = 0
+    object PaintBoxTimeline: TPanel
+      Left = -2
       Height = 50
       Top = 0
-      Width = 50
-      ParentColor = False
+      Width = 82
+      BevelOuter = bvNone
       PopupMenu = ContextMenu
+      TabOrder = 0
       OnMouseDown = PaintBoxTimelineMouseDown
       OnMouseMove = PaintBoxTimelineMouseMove
       OnMouseUp = PaintBoxTimelineMouseUp

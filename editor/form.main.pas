@@ -71,7 +71,6 @@ type
     procedure FloatTimeChange(Sender: TObject);
     procedure FloatZoomChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure MenuItemLoadMixerDataClick(Sender: TObject);
     procedure MenuItemLoadSpineModelClick(Sender: TObject);
     procedure MenuItemNewMixerDataClick(Sender: TObject);
@@ -134,15 +133,6 @@ begin
   FrameViewer.CastleControlViewer.Container.BackgroundColor := Vector4(0, 0, 0, 0);
   StateMain := TStateMain.Create(Self);
   TUIState.Current := StateMain;
-end;
-
-procedure TFormMain.FormKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-begin
-  if (Key = VK_DELETE) and (Self.FrameTimeline.SelectedRec.KeyItem <> nil) then
-  begin
-
-  end;
 end;
 
 procedure TFormMain.ButtonAddNewAnimationClick(Sender: TObject);

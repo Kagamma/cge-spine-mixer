@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, ExtCtrls, CastleSpineMixer, Graphics,
-  Menus, Generics.Collections;
+  Menus, Generics.Collections, LCLType;
 
 type
   TFrameTimeRec = record
@@ -20,8 +20,8 @@ type
 
   TFrameTimeline = class(TFrame)
     MenuItemDeleteKey: TMenuItem;
-    PaintBoxTimeline: TPaintBox;
     ContextMenu: TPopupMenu;
+    PaintBoxTimeline: TPanel;
     ScrollBoxTimeline: TScrollBox;
     procedure MenuItemDeleteKeyClick(Sender: TObject);
     procedure PaintBoxTimelineMouseDown(Sender: TObject; Button: TMouseButton;
@@ -46,6 +46,8 @@ type
     function TimeToCoord(const ATime: Single): Integer;
     procedure ForceRepaint;
     function IsInsideFrameTimeRec(X, Y: Integer; out ARec: TFrameTimeRec): Boolean;
+    procedure DeleteSelectedKey;
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   end;
 
 implementation
@@ -70,6 +72,7 @@ begin
   Self.SelectedTime := -1;
   Self.PaintBoxTimeline.ControlStyle := Self.PaintBoxTimeline.ControlStyle + [csOpaque];
   Self.FrameTimeRecList := TFrameTimeRecList.Create;
+  Self.PaintBoxTimeline.OnKeyDown := @Self.FormKeyDown;
 end;
 
 destructor TFrameTimeline.Destroy;
@@ -288,12 +291,7 @@ end;
 
 procedure TFrameTimeline.MenuItemDeleteKeyClick(Sender: TObject);
 begin
-  if Self.SelectedRec.KeyItem <> nil then
-  begin
-    Self.SelectedRec.MixerItem.DeleteKey(Self.SelectedRec.KeyItem.Time);
-    Self.SelectedRec.KeyItem := nil;
-    Self.ForceRepaint;
-  end;
+  Self.DeleteSelectedKey;
 end;
 
 function TFrameTimeline.CoordToTime(const AX: Integer): Single;
@@ -332,6 +330,25 @@ begin
     begin
       Exit(True);
     end;
+  end;
+end;
+
+procedure TFrameTimeline.DeleteSelectedKey;
+begin
+  if Self.SelectedRec.KeyItem <> nil then
+  begin
+    Self.SelectedRec.MixerItem.DeleteKey(Self.SelectedRec.KeyItem.Time);
+    Self.SelectedRec.KeyItem := nil;
+    Self.ForceRepaint;
+  end;
+end;
+
+procedure TFrameTimeline.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_DELETE then
+  begin
+    Self.DeleteSelectedKey;
   end;
 end;
 
