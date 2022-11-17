@@ -225,12 +225,15 @@ begin
         Self.PaintBoxTimeline.Canvas.LineTo(X - 3, Y + BAR_SIZE - 1 - Round((BAR_SIZE * 2 - 2) * KeyItem.Value));
         Self.PaintBoxTimeline.Canvas.MoveTo(X + 3, Y + BAR_SIZE - 1 - Round((BAR_SIZE * 2 - 2) * KeyItem.Value));
       end;
-      case KeyItem.Kind of
-        mktBezier:
-          Self.PaintBoxTimeline.Canvas.Pen.Color := clYellow;
-        else
-          Self.PaintBoxTimeline.Canvas.Pen.Color := clGray;
-      end;
+      if not Rec.KeyItem.Actived then
+        Self.PaintBoxTimeline.Canvas.Pen.Color := $D0D0D0
+      else
+        case KeyItem.Kind of
+          mktBezier:
+            Self.PaintBoxTimeline.Canvas.Pen.Color := clYellow;
+          else
+            Self.PaintBoxTimeline.Canvas.Pen.Color := clGray;
+        end;
       //
       Self.PaintBoxTimeline.Canvas.FillRect(X - 3, Y - BAR_SIZE, X + 3, Y + BAR_SIZE);
       IsFirstKey := False;
