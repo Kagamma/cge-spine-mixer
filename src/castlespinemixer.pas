@@ -22,6 +22,7 @@ type
     FKind: TCastleSpineMixerKeyType;
     FCX1, FCY1, FCX2, FCY2: Single;
     FIsBezierCached: Boolean;
+    FActived: Boolean;
     procedure SetCX1(const V: Single);                  
     procedure SetCY1(const V: Single);
     procedure SetCX2(const V: Single);
@@ -31,7 +32,8 @@ type
     BezierCurvePoints: array[0..19] of TVector2;
     constructor Create(ACollection: TCollection); override;
     procedure CalculateBezier;
-  published
+  published          
+    property Actived: Boolean read FActived write FActived default True;
     property Time: Single read FTime write FTime;
     property Value: Single read FValue write FValue;
     property Kind: TCastleSpineMixerKeyType read FKind write FKind default mktLinear;
@@ -253,6 +255,7 @@ begin
   Self.FCX2 := 0.5;
   Self.FCY2 := 1;
   Self.FIsBezierCached := False;
+  Self.FActived := True;
 end;
 
 procedure TCastleSpineMixerKeyItem.CalculateBezier; 
@@ -362,6 +365,8 @@ begin
   end;
   if (NextKey <> nil) and (PrevKey <> nil) then
   begin
+    if not PrevKey.Actived then
+      Exit(-1);
     if PrevKey.Time = NextKey.Time then
       Result := NextKey.Value
     else
@@ -557,8 +562,10 @@ procedure TCastleSpineMixerBehavior.Update(const SecondsPassed: Single; var Remo
 var
   Spine: TCastleSpine;
   I, J, Track: Integer;
+  V: Single;
   MixerItem: TCastleSpineMixerMixerItem;
-  TrackEntry: PspTrackEntry;
+  TrackEntry: PspTrackEntry;   
+  Params: TCastleSpinePlayAnimationParameters;
 begin
   inherited;
   if not (Self.Parent is TCastleSpine) then Exit;
@@ -584,7 +591,30 @@ begin
       if MixerItem.Name = Spine.AnimationsList[J] then
       begin
         TrackEntry := Spine.TrackEntries[Track];
-        TrackEntry^.trackTime := TrackEntry^.animation^.duration * MixerItem.GetValue(Self.FTime);
+        V := MixerItem.GetValue(Self.FTime);
+        // Activate?
+        if (TrackEntry = nil) and (V <> -1) then
+        begin
+          Params.Name := MixerItem.Name;
+          Params.TransitionDuration := 0;
+          Params.Track := Track;
+          Params.Forward := True;
+          Params.InitialTime := 0;
+          Params.TimeScale := 0;
+          Params.Loop := True;
+          Spine.PlayAnimation(Params);
+        end else
+        // Deactivate?
+        if (TrackEntry <> nil) and (V = -1) then
+        begin
+          Spine.StopAnimation(Track);
+          // Not sure why we need a dummy. Without it, all animations stop working
+          Spine.PlayAnimation('_____dummy_____', True, True, Track);
+        end;
+        if (TrackEntry <> nil) then
+        begin
+          TrackEntry^.trackTime := TrackEntry^.animation^.duration * MixerItem.GetValue(Self.FTime);
+        end;   
         Inc(Track);
       end;
     end;
@@ -592,7 +622,11 @@ begin
   //
   Self.FTime := Self.FTime + SecondsPassed * Spine.TimePlayingSpeed;
   if Self.FTime > Self.FCurrentAnimationItem.Duration then
+  begin
     Self.FTime := 0;
+    Self.StopAnimation;
+    Self.PlayAnimation(Self.FCurrentAnimationItem.Name);
+  end;
 end;
 
 function TCastleSpineMixerBehavior.PlayAnimation(const AnimationName: String; const InitialTime: Single = 0): Boolean;
@@ -629,7 +663,10 @@ begin
         begin
           // Mark it as playing
           // TODO: Proper handle play animation, instead of hard setting
-          Params.Name := MixerItem.Name;
+          if MixerItem.GetValue(Self.FTime) = -1 then
+            Params.Name := '_____dummy_____'
+          else
+            Params.Name := MixerItem.Name;
           Params.TransitionDuration := 0;
           Params.Track := Track;
           Params.Forward := True;

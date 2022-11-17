@@ -19,11 +19,13 @@ type
   { TFrameTimeline }
 
   TFrameTimeline = class(TFrame)
+    MenuItemActivate: TMenuItem;
     MenuItemDeleteKey: TMenuItem;
     ContextMenu: TPopupMenu;
     PaintBoxTimeline: TPanel;
     ScrollBoxTimeline: TScrollBox;
     procedure ContextMenuPopup(Sender: TObject);
+    procedure MenuItemActivateClick(Sender: TObject);
     procedure MenuItemDeleteKeyClick(Sender: TObject);
     procedure PaintBoxTimelineMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -118,7 +120,9 @@ begin
   Self.PaintBoxTimeline.Canvas.Pen.Style := psSolid;
   Self.PaintBoxTimeline.Canvas.Pen.Width := 1;
   I := 0;
-  if Self.Zoom < 0.5 then
+  if Self.Zoom < 0.2 then
+    Modu := 50
+  else if Self.Zoom < 0.5 then
     Modu := 20
   else if Self.Zoom < 1 then
     Modu := 10;
@@ -131,6 +135,7 @@ begin
       Self.PaintBoxTimeline.Canvas.Line(X, 0, X, 10);
       Self.PaintBoxTimeline.Canvas.TextOut(X - Self.PaintBoxTimeline.Canvas.TextWidth(S) div 2, 15, S);
     end else
+    if I mod (Modu div 5) = 0 then
       Self.PaintBoxTimeline.Canvas.Line(X, 0, X, 5);
     F := F + STEP;
     TimelineWidth := Round(TimelineWidth + STEP * 1000 * Self.Zoom);
@@ -204,10 +209,14 @@ begin
       Self.FrameTimeRecList.Add(Rec);
       
       //
-      if Rec.KeyItem = Self.SelectedRec.KeyItem then
-        Self.PaintBoxTimeline.Canvas.Brush.Color := clGreen
-      else
-        Self.PaintBoxTimeline.Canvas.Brush.Color := clRed;
+      if Rec.KeyItem.Actived then
+      begin
+        if Rec.KeyItem = Self.SelectedRec.KeyItem then
+          Self.PaintBoxTimeline.Canvas.Brush.Color := clGreen
+        else
+          Self.PaintBoxTimeline.Canvas.Brush.Color := clRed;
+      end else
+        Self.PaintBoxTimeline.Canvas.Brush.Color := clDkGray;
       //
       if IsFirstKey then
         Self.PaintBoxTimeline.Canvas.MoveTo(X + 3, Y + BAR_SIZE - 1 - Round((BAR_SIZE * 2 - 2) * KeyItem.Value))
@@ -344,6 +353,20 @@ end;
 procedure TFrameTimeline.ContextMenuPopup(Sender: TObject);
 begin
   MenuItemDeleteKey.Enabled := Self.SelectedRec.KeyItem <> nil;
+  MenuItemActivate.Visible := Self.SelectedRec.KeyItem <> nil;
+  if MenuItemActivate.Visible then
+  begin
+    if Self.SelectedRec.KeyItem.Actived then
+      MenuItemActivate.Caption := 'Deactivate'
+    else
+      MenuItemActivate.Caption := 'Activate';
+  end;
+end;
+
+procedure TFrameTimeline.MenuItemActivateClick(Sender: TObject);
+begin
+  Self.SelectedRec.KeyItem.Actived := not Self.SelectedRec.KeyItem.Actived;
+  Self.ForceRepaint;
 end;
 
 function TFrameTimeline.CoordToTime(const AX: Integer): Single;
