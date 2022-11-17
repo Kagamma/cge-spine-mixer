@@ -33,14 +33,15 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure PaintBoxTimelinePaint(Sender: TObject);
   private
-    FIsMouseDown: Boolean;
+    FIsMouseDown,
+    FIsFaraway: Boolean;
     FrameTimeRecList: TFrameTimeRecList;
   public
     IsRepainted: Boolean;
     SelectedRec: TFrameTimeRec;
     SelectedTime,
     Zoom: Single;
-    MouseX, MouseY: Integer;
+    MouseX, MouseY, MouseDownX, MouseDownY: Integer;
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
     function CoordToTime(const AX: Integer): Single;     
@@ -265,8 +266,11 @@ begin
       Self.SelectedTime := Self.CoordToTime(X);
     end else
       Self.SelectedTime := -1;
+    // Check if faraway yet to prevent from moving key accidently
+    if (Abs(X - Self.MouseDownX) > 2) or (Abs(Y - Self.MouseDownY) > 2) then
+      Self.FIsFaraway := True;
     // If there's a selected key, move it around
-    if Self.SelectedRec.KeyItem <> nil then
+    if (Self.FIsFaraway) and (Self.SelectedRec.KeyItem <> nil) then
     begin
       Self.SelectedRec.KeyItem.Time := Self.SelectedTime;
       // Sort timeline
@@ -297,6 +301,9 @@ var
   I: Integer;
 begin
   Self.PaintBoxTimeline.SetFocus;
+  Self.MouseDownX := X;
+  Self.MouseDownY := Y;
+  Self.FIsFaraway := False;
   if not Self.IsInsideFrameTimeRec(X, Y, Rec) then
   begin
     Self.SelectedRec.KeyItem := nil;
