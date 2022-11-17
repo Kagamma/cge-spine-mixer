@@ -18,6 +18,7 @@ type
     EditAnimationName: TEdit;
     procedure ButtonCancelClick(Sender: TObject);
     procedure ButtonOkClick(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
   private
 
   public
@@ -75,6 +76,11 @@ begin
     on E: Exception do
       ShowMessage(E.Message);
   end;
+end;
+
+procedure TFormNewAnimation.FormDeactivate(Sender: TObject);
+begin
+  Self.ButtonCancelClick(Sender);
 end;
 
 end.

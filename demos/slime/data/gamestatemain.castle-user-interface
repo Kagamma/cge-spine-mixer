@@ -65,7 +65,7 @@
                 "$$ClassName" : "TCastleSpineMixerBehavior",
                 "AutoAnimation" : "Animation",
                 "Name" : "SpineMixerBehavior1",
-                "URL" : "castle-data:/demos/export/slime_mixer.spine-mixer"
+                "URL" : "castle-data:/demos/export/slime_mixer.castle-spine-mixer"
               }
             ]
           }

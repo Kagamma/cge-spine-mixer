@@ -8,6 +8,7 @@ object FormCurveEditor: TFormCurveEditor
   ClientHeight = 380
   ClientWidth = 332
   FormStyle = fsStayOnTop
+  OnDeactivate = FormDeactivate
   OnShow = FormShow
   Position = poScreenCenter
   object PanelCurveEditor: TPanel

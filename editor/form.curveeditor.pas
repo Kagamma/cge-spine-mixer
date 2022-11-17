@@ -18,6 +18,7 @@ type
     PanelCurveEditor: TPanel;
     procedure ButtonCancelClick(Sender: TObject);
     procedure ButtonOkClick(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
     procedure FormMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -28,7 +29,8 @@ type
   private
     IsMouseDown: Boolean;
     SelectedControlPoint: Integer;
-    procedure UpdateKeyItemControlPoints;
+    procedure UpdateKeyItemControlPoints;       
+    procedure RevertKeyItemControlPoints;
   public
     ControlPoints: array[0..1] of TVector2;
     ControlPointsBackup: array[0..1] of TVector2;
@@ -48,19 +50,25 @@ uses
 
 procedure TFormCurveEditor.UpdateKeyItemControlPoints;
 begin
+  if FormMain.FrameTimeline.SelectedRec.KeyItem = nil then Exit;
   FormMain.FrameTimeline.SelectedRec.KeyItem.CX1 := Self.ControlPoints[0].X / Self.PanelCurveEditor.Width;
   FormMain.FrameTimeline.SelectedRec.KeyItem.CY1 := 1 - Self.ControlPoints[0].Y / Self.PanelCurveEditor.Height;
   FormMain.FrameTimeline.SelectedRec.KeyItem.CX2 := Self.ControlPoints[1].X / Self.PanelCurveEditor.Width;
   FormMain.FrameTimeline.SelectedRec.KeyItem.CY2 := 1 - Self.ControlPoints[1].Y / Self.PanelCurveEditor.Height;
 end;
 
-procedure TFormCurveEditor.ButtonCancelClick(Sender: TObject);
+procedure TFormCurveEditor.RevertKeyItemControlPoints;
 begin
-  // Revert KeyItem
+  if FormMain.FrameTimeline.SelectedRec.KeyItem = nil then Exit;
   FormMain.FrameTimeline.SelectedRec.KeyItem.CX1 := Self.ControlPointsBackup[0].X;
   FormMain.FrameTimeline.SelectedRec.KeyItem.CY1 := Self.ControlPointsBackup[0].Y;
   FormMain.FrameTimeline.SelectedRec.KeyItem.CX2 := Self.ControlPointsBackup[1].X;
   FormMain.FrameTimeline.SelectedRec.KeyItem.CY2 := Self.ControlPointsBackup[1].Y;
+end;
+
+procedure TFormCurveEditor.ButtonCancelClick(Sender: TObject);
+begin        
+  RevertKeyItemControlPoints;
   Self.Hide;
 end;
 
@@ -68,6 +76,11 @@ procedure TFormCurveEditor.ButtonOkClick(Sender: TObject);
 begin
   UpdateKeyItemControlPoints;
   Self.Hide;
+end;
+
+procedure TFormCurveEditor.FormDeactivate(Sender: TObject);
+begin
+  Self.ButtonCancelClick(Sender);
 end;
 
 procedure TFormCurveEditor.FormMouseDown(Sender: TObject; Button: TMouseButton;
@@ -106,6 +119,7 @@ procedure TFormCurveEditor.FormMouseUp(Sender: TObject; Button: TMouseButton;
 begin
   Self.IsMouseDown := False;
   Self.SelectedControlPoint := -1;
+  Self.PanelCurveEditor.Invalidate;
 end;
 
 procedure TFormCurveEditor.FormShow(Sender: TObject);

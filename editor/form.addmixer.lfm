@@ -8,6 +8,7 @@ object FormAddMixer: TFormAddMixer
   ClientHeight = 119
   ClientWidth = 548
   FormStyle = fsStayOnTop
+  OnDeactivate = FormDeactivate
   OnShow = FormShow
   Position = poScreenCenter
   object ButtonCancel: TBitBtn

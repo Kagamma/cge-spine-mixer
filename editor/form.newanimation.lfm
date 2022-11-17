@@ -8,8 +8,8 @@ object FormNewAnimation: TFormNewAnimation
   ClientHeight = 119
   ClientWidth = 548
   FormStyle = fsStayOnTop
+  OnDeactivate = FormDeactivate
   Position = poScreenCenter
-  LCLVersion = '2.3.0.0'
   object EditAnimationName: TEdit
     Left = 16
     Height = 23

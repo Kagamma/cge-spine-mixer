@@ -134,7 +134,7 @@ type
     {$ifdef CASTLE_DESIGN_MODE}
     function PropertySections(const PropertyName: String): TPropertySections; override;
     {$endif}
-    function PlayAnimation(const AnimationName: String): Boolean;     
+    function PlayAnimation(const AnimationName: String; const InitialTime: Single = 0): Boolean;
     procedure StopAnimation;
     { This mainly use to set initial pose based on time value }
     procedure SetInitialPose(const AnimationName: String);
@@ -570,7 +570,7 @@ begin
     Self.FTime := 0;
 end;
 
-function TCastleSpineMixerBehavior.PlayAnimation(const AnimationName: String): Boolean;
+function TCastleSpineMixerBehavior.PlayAnimation(const AnimationName: String; const InitialTime: Single = 0): Boolean;
 var
   Spine: TCastleSpine;
   I, J, Track: Integer;
@@ -588,7 +588,7 @@ begin
   Self.FCurrentAnimationItem := Self.Data.FindAnimation(AnimationName);
   if Self.FCurrentAnimationItem <> nil then
   begin
-    Self.FTime := 0;
+    Self.FTime := Max(0, InitialTime);
     Self.FIsPlaying := True;
     // Stop current animations
     Spine.StopAnimation;

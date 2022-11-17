@@ -18,6 +18,7 @@ type
     ComboBoxMixer: TComboBox;
     procedure ButtonCancelClick(Sender: TObject);
     procedure ButtonOkClick(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
 
@@ -71,6 +72,11 @@ begin
     FormMain.FrameMixer.RefreshMixerList;
     Self.Hide;
   end;
+end;
+
+procedure TFormAddMixer.FormDeactivate(Sender: TObject);
+begin
+  ButtonCancelClick(Sender);
 end;
 
 procedure TFormAddMixer.FormShow(Sender: TObject);

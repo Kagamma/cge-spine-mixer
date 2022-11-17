@@ -98,7 +98,6 @@ type
     FrameTimeline: TFrameTimeline;
     AnimationItem: TCastleSpineMixerAnimationItem;
     StateMain: TStateMain;
-    Ticks: QWord;
   end;
 
 var
@@ -192,7 +191,7 @@ begin
   if (TimerPlay.Enabled) and (Self.AnimationItem <> nil) then
   begin
     ButtonPlay.ImageIndex := 16;
-    EditorSpineMixer.PlayAnimation(Self.AnimationItem.Name);
+    EditorSpineMixer.PlayAnimation(Self.AnimationItem.Name, Self.FrameTimeline.SelectedTime);
   end else
   begin
     ButtonPlay.ImageIndex := 2;
@@ -224,6 +223,8 @@ begin
   EditorSpineMixer.Time := 0;
   LabelTime.Caption := FloatToStrF(EditorSpineMixer.Time, ffFixed, 0, 3);
   ButtonPlay.ImageIndex := 2;
+  // Stop animation
+  EditorSpineMixer.StopAnimation;
   // Unselected key
   Self.FrameTimeline.DeselectedKey;
   // Refresh mixer list
@@ -327,8 +328,7 @@ end;
 
 procedure TFormMain.TimerPlayStartTimer(Sender: TObject);
 begin
-  EditorSpineMixer.Time := 0;
-  Ticks := GetTickCount64;
+  // EditorSpineMixer.Time := 0;
 end;
 
 procedure TFormMain.TimerPlayTimer(Sender: TObject);

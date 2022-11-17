@@ -297,6 +297,8 @@ begin
       Self.SelectedTime := Self.CoordToTime(X);
       EditorSpineMixer.Time := Self.SelectedTime;
       EditorSpineMixer.SetInitialPose(FormMain.AnimationItem.Name);
+      FormMain.TimerPlay.Enabled := False;
+      FormMain.ButtonPlay.ImageIndex := 2;
     end else
       Self.SelectedTime := -1;
   end else
@@ -305,6 +307,8 @@ begin
     Self.SelectedRec := Rec;   
     EditorSpineMixer.Time := Self.SelectedTime;
     EditorSpineMixer.SetInitialPose(FormMain.AnimationItem.Name);
+    FormMain.TimerPlay.Enabled := False;
+    FormMain.ButtonPlay.ImageIndex := 2;
   end;
   // Update mixer values on UI
   for I := 0 to FormMain.FrameMixer.ScrollBoxMixer.ControlCount - 1 do
@@ -344,6 +348,7 @@ begin
     Self.IsRepainted := False;
     Self.PaintBoxTimeline.Invalidate;
   end;
+  FormMain.LabelTime.Caption := FloatToStrF(EditorSpineMixer.Time, ffFixed, 0, 3);
 end;
 
 function TFrameTimeline.IsInsideFrameTimeRec(X, Y: Integer; out ARec: TFrameTimeRec): Boolean;
