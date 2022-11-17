@@ -124,6 +124,7 @@ type
     FTime: Single;
     { True = playing animation }
     FIsPlaying: Boolean;
+    FIsLooped: Boolean;
     { Reference to current animation }
     FCurrentAnimationItem: TCastleSpineMixerAnimationItem;
     { }
@@ -138,7 +139,7 @@ type
     {$ifdef CASTLE_DESIGN_MODE}
     function PropertySections(const PropertyName: String): TPropertySections; override;
     {$endif}
-    function PlayAnimation(const AnimationName: String; const InitialTime: Single = 0): Boolean;
+    function PlayAnimation(const AnimationName: String; const Loop: boolean; const InitialTime: Single = 0): Boolean;
     procedure StopAnimation;
     { This mainly use to set initial pose based on time value }
     procedure SetInitialPose(const AnimationName: String);
@@ -575,7 +576,7 @@ begin
   //
   if Self.FIsCheckAutoAnimation then
   begin
-    Self.PlayAnimation(Self.FAutoAnimation);
+    Self.PlayAnimation(Self.FAutoAnimation, Spine.AutoAnimationsLoop);
     FIsCheckAutoAnimation := False;
   end;
   if not Self.FIsPlaying then Exit;
@@ -625,11 +626,12 @@ begin
   begin
     Self.FTime := 0;
     Self.StopAnimation;
-    Self.PlayAnimation(Self.FCurrentAnimationItem.Name);
+    if Self.FIsLooped then
+      Self.PlayAnimation(Self.FCurrentAnimationItem.Name, True);
   end;
 end;
 
-function TCastleSpineMixerBehavior.PlayAnimation(const AnimationName: String; const InitialTime: Single = 0): Boolean;
+function TCastleSpineMixerBehavior.PlayAnimation(const AnimationName: String; const Loop: Boolean; const InitialTime: Single = 0): Boolean;
 var
   Spine: TCastleSpine;
   I, J, Track: Integer;
@@ -680,6 +682,7 @@ begin
     end;
     // Force spine to start animating immediately
     Spine.InternalPlayAnimation;
+    Self.FIsLooped := Loop;
     //
     Result := True;
   end else

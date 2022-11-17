@@ -211,7 +211,7 @@ begin
   if (TimerPlay.Enabled) and (Self.AnimationItem <> nil) then
   begin
     ButtonPlay.ImageIndex := 16;
-    EditorSpineMixer.PlayAnimation(Self.AnimationItem.Name, Self.FrameTimeline.SelectedTime);
+    EditorSpineMixer.PlayAnimation(Self.AnimationItem.Name, True, Self.FrameTimeline.SelectedTime);
   end else
   begin
     ButtonPlay.ImageIndex := 2;
