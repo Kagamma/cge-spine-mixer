@@ -42,6 +42,7 @@ end;
 procedure TFrameMixer.RefreshMixerList;
 var
   I: Integer;
+  MixerItem: TCastleSpineMixerMixerItem;
 begin
   // Delete current mixer list
   for I := Self.ScrollBoxMixer.ControlCount - 1 downto 0 do
@@ -50,8 +51,14 @@ begin
   if FormMain.AnimationItem <> nil then
     for I := FormMain.AnimationItem.MixerList.Count - 1 downto 0 do
     begin
-      FormAddMixer.AddFrameMixer(FormMain.AnimationItem.MixerList.Items[I] as TCastleSpineMixerMixerItem);
+      MixerItem := FormMain.AnimationItem.MixerList.Items[I] as TCastleSpineMixerMixerItem;
+      if (FormMain.EditMixerFilter.Text = '') or
+         (LowerCase(MixerItem.Name).IndexOf(LowerCase(FormMain.EditMixerFilter.Text)) >= 0) then
+        FormAddMixer.AddFrameMixer(MixerItem);
     end;
+  FormMain.LabelMixerCount.Caption := IntToStr(FormMain.AnimationItem.MixerList.Count) + ' Mixer';
+  if FormMain.AnimationItem.MixerList.Count > 1 then
+    FormMain.LabelMixerCount.Caption := FormMain.LabelMixerCount.Caption + 's';
 end;
 
 end.

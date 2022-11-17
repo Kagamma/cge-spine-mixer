@@ -23,6 +23,7 @@ type
     ContextMenu: TPopupMenu;
     PaintBoxTimeline: TPanel;
     ScrollBoxTimeline: TScrollBox;
+    procedure ContextMenuPopup(Sender: TObject);
     procedure MenuItemDeleteKeyClick(Sender: TObject);
     procedure PaintBoxTimelineMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -87,7 +88,7 @@ procedure TFrameTimeline.PaintBoxTimelinePaint(Sender: TObject);
 const
   BAR_SIZE = 10;
 var
-  I, J, X, Y: Integer;
+  I, IC, J, X, Y: Integer;
   Modu: Integer = 5;
   F: Single = 0;
   AnimationItem: TCastleSpineMixerAnimationItem;
@@ -168,10 +169,16 @@ begin
   // Render mixers
   Self.FrameTimeRecList.Clear;
   Self.PaintBoxTimeline.Canvas.Pen.Style := psSolid;
+  IC := 0;
   for I := 0 to AnimationItem.MixerList.Count - 1 do
   begin
-    MixerItem := AnimationItem.MixerList.Items[AnimationItem.MixerList.Count - I - 1] as TCastleSpineMixerMixerItem;
-    Y := (AnimationItem.MixerList.Count - I - 1) * 40 + 70;
+    MixerItem := AnimationItem.MixerList.Items[I] as TCastleSpineMixerMixerItem;
+    
+    if (FormMain.EditMixerFilter.Text <> '') and
+       (LowerCase(MixerItem.Name).IndexOf(LowerCase(FormMain.EditMixerFilter.Text)) < 0) then
+      Continue;
+
+    Y := IC * 40 + 70;
     Self.PaintBoxTimeline.Canvas.Brush.Color := $D0D0D0;
     Self.PaintBoxTimeline.Canvas.FillRect(30, Y - BAR_SIZE, TimelineWidth - 30, Y + BAR_SIZE);
 
@@ -220,6 +227,7 @@ begin
     end;
     Self.PaintBoxTimeline.Canvas.Brush.Color := clWhite;
     Self.PaintBoxTimeline.Canvas.Pen.Color := clBlack;
+    Inc(IC);
   end;
 
   // Render mouse hover
@@ -326,6 +334,11 @@ begin
   Self.DeleteSelectedKey;
 end;
 
+procedure TFrameTimeline.ContextMenuPopup(Sender: TObject);
+begin
+  MenuItemDeleteKey.Enabled := Self.SelectedRec.KeyItem <> nil;
+end;
+
 function TFrameTimeline.CoordToTime(const AX: Integer): Single;
 begin
   Result := StrToFloat(FloatToStrF((AX - 30) / (Self.PaintBoxTimeline.Width - 60) * FormMain.AnimationItem.Duration, ffFixed, 0, 3));
@@ -380,10 +393,6 @@ end;
 procedure TFrameTimeline.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if Key = VK_DELETE then
-  begin
-    Self.DeleteSelectedKey;
-  end;
 end;
 
 procedure TFrameTimeline.DeselectedKey;

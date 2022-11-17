@@ -10,7 +10,7 @@ uses
   PropEdits, CastlePropEdits, CastleDebugTransform, Forms, Controls, Graphics, Dialogs,
   ButtonPanel, StdCtrls, ExtCtrls, CastleInternalExposeTransformsDialog,
   {$endif}
-  CastleTransform, CastleSpine, spine, CastleClassUtils, CastleCurves;
+  CastleTransform, CastleSpine, spine, CastleClassUtils, CastleCurves, fpjsonrtti;
 
 type
   TCastleSpineMixerKeyType = (mktLinear, mktBezier);
@@ -109,6 +109,8 @@ type
     procedure DeleteAnimation(AIndex: Cardinal);
     { Find animation }
     function FindAnimation(AnimationName: String): TCastleSpineMixerAnimationItem;
+    { Clone animation }
+    function CloneAnimation(AnimationName, NewAnimationName: String): TCastleSpineMixerAnimationItem;
   published
     property AnimationList: TCastleSpineMixerAnimationList read FAnimationList;
   end;
@@ -489,6 +491,29 @@ begin
     if TCastleSpineMixerAnimationItem(Self.FAnimationList.Items[I]).Name = AnimationName then
       Exit(TCastleSpineMixerAnimationItem(Self.FAnimationList.Items[I]));
   Result := nil;
+end;
+
+function TCastleSpineMixerData.CloneAnimation(AnimationName, NewAnimationName: String): TCastleSpineMixerAnimationItem;
+var
+  JSONString: String;
+  Streamer: TJSONStreamer;
+  DeStreamer: TJSONDeStreamer;
+  BaseAnim: TCastleSpineMixerAnimationItem;
+begin
+  BaseAnim := Self.FindAnimation(AnimationName);
+  if BaseAnim = nil then
+    raise Exception.Create('"' + AnimationName + '" not found');
+  Streamer := TJSONStreamer.Create(nil);
+  DeStreamer := TJSONDeStreamer.Create(nil);
+  try
+    JSONString := Streamer.ObjectToJSONString(BaseAnim);
+    Result := Self.AddAnimation(NewAnimationName);
+    DeStreamer.JSONToObject(JSONString, Result);
+    Result.Name := NewAnimationName;
+  finally
+    Streamer.Free;
+    DeStreamer.Free;
+  end;
 end;
 
 // ----- TCastleSpineMixerBehavior -----

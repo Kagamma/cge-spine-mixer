@@ -69,10 +69,10 @@ end;
 
 procedure TFrameMixerItem.ButtonDeleteClick(Sender: TObject);
 begin
-  Self.MixerOwner.RemoveControl(Self);
   FormMain.AnimationItem.DeleteMixer(Self.MixerItem);
-  FormMain.FrameTimeline.ForceRepaint;
   EditorSpineMixer.SetInitialPose(FormMain.AnimationItem.Name);
+  FormMain.FrameMixer.RefreshMixerList;     
+  FormMain.FrameTimeline.ForceRepaint;
 end;
 
 procedure TFrameMixerItem.ButtonKeyClick(Sender: TObject);

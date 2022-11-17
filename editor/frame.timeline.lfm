@@ -34,10 +34,12 @@ object FrameTimeline: TFrameTimeline
     end
   end
   object ContextMenu: TPopupMenu
+    OnPopup = ContextMenuPopup
     Left = 56
     Top = 72
     object MenuItemDeleteKey: TMenuItem
       Caption = 'Delete Key'
+      ShortCut = 46
       OnClick = MenuItemDeleteKeyClick
     end
   end

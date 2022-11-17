@@ -29,6 +29,7 @@ type
 
   TFormMain = class(TForm)
     ComboBoxAnimations: TComboBox;
+    EditMixerFilter: TEdit;
     FloatZoom: TFloatSpinEdit;
     FloatTime: TFloatSpinEdit;
     FloatSpeed: TFloatSpinEdit;
@@ -36,6 +37,7 @@ type
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
+    LabelMixerCount: TLabel;
     LabelKind: TLabel;
     LabelTime: TLabel;
     MainMenu: TMainMenu;
@@ -63,21 +65,24 @@ type
     ButtonDeleteAnimation: TSpeedButton;
     Separator2: TMenuItem;
     ButtonPlay: TSpeedButton;
-    SpeedButton1: TSpeedButton;
+    ButtonAddMixer: TSpeedButton;
     ButtonLinear: TSpeedButton;
     ButtonBezier: TSpeedButton;
     ButtonEditCurve: TSpeedButton;
+    ButtonCloneAnimation: TSpeedButton;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
     TimerUpdate: TTimer;
     TimerPlay: TTimer;
     procedure ButtonAddNewAnimationClick(Sender: TObject);
     procedure ButtonBezierClick(Sender: TObject);
+    procedure ButtonCloneAnimationClick(Sender: TObject);
     procedure ButtonDeleteAnimationClick(Sender: TObject);
     procedure ButtonLinearClick(Sender: TObject);
     procedure ButtonPlayClick(Sender: TObject);
     procedure ButtonRenameAnimationClick(Sender: TObject);
     procedure ComboBoxAnimationsChange(Sender: TObject);
+    procedure EditMixerFilterChange(Sender: TObject);
     procedure FloatSpeedChange(Sender: TObject);
     procedure FloatTimeChange(Sender: TObject);
     procedure FloatZoomChange(Sender: TObject);
@@ -86,7 +91,7 @@ type
     procedure MenuItemLoadSpineModelClick(Sender: TObject);
     procedure MenuItemNewMixerDataClick(Sender: TObject);
     procedure MenuItemSaveMixerDataClick(Sender: TObject);
-    procedure SpeedButton1Click(Sender: TObject);
+    procedure ButtonAddMixerClick(Sender: TObject);
     procedure ButtonEditCurveClick(Sender: TObject);
     procedure TimerPlayStartTimer(Sender: TObject);
     procedure TimerPlayTimer(Sender: TObject);
@@ -157,6 +162,21 @@ procedure TFormMain.ButtonBezierClick(Sender: TObject);
 begin
   Self.FrameTimeline.SelectedRec.KeyItem.Kind := mktBezier;
   Self.FrameTimeline.ForceRepaint;
+end;
+
+procedure TFormMain.ButtonCloneAnimationClick(Sender: TObject);
+var
+  CloneName: String;
+begin
+  if Self.AnimationItem = nil then Exit;
+  CloneName := AnimationItem.Name + ' - clone';
+  EditorSpineMixer.Data.CloneAnimation(AnimationItem.Name, CloneName);
+  Self.ComboBoxAnimations.AddItem(
+    CloneName,
+    EditorSpineMixer.Data.FindAnimation(CloneName)
+  );
+  Self.ComboBoxAnimations.ItemIndex := Self.ComboBoxAnimations.Items.Count - 1;
+  Self.ComboBoxAnimationsChange(Sender);
 end;
 
 procedure TFormMain.ButtonDeleteAnimationClick(Sender: TObject);
@@ -233,6 +253,12 @@ begin
   Self.FrameTimeline.ForceRepaint;
 end;
 
+procedure TFormMain.EditMixerFilterChange(Sender: TObject);
+begin                  
+  FormMain.FrameMixer.RefreshMixerList;
+  FormMain.FrameTimeline.ForceRepaint;
+end;
+
 procedure TFormMain.FloatSpeedChange(Sender: TObject);
 begin
   Self.StateMain.Spine.TimePlayingSpeed := FloatSpeed.Value;
@@ -285,6 +311,7 @@ begin
       Self.MenuItemNewMixerData.Enabled := True;      
       Self.MenuItemLoadMixerData.Enabled := True;
       Self.MenuItemSaveMixerData.Enabled := True;
+      Self.Caption := 'Castle Spine Mixer - ' + OpenDialogSpine.FileName;
     except
       on E: Exception do
         ShowMessage(E.Message);
@@ -314,7 +341,7 @@ begin
   end;
 end;
 
-procedure TFormMain.SpeedButton1Click(Sender: TObject);
+procedure TFormMain.ButtonAddMixerClick(Sender: TObject);
 begin
   FrameMixer.MenuItemAddMixerClick(Sender);
 end;
