@@ -5,7 +5,7 @@ unit Frame.Mixer;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Menus, CastleSpineMixer;
+  Classes, SysUtils, Forms, Controls, Menus, CastleSpineMixer, Dialogs;
 
 type
 
@@ -34,7 +34,9 @@ uses
 procedure TFrameMixer.MenuItemAddMixerClick(Sender: TObject);
 begin
   if (FormMain.StateMain.Spine.URL <> '') and (FormMain.ComboBoxAnimations.ItemIndex >= 0) then
-    FormAddMixer.Show;
+    FormAddMixer.Show
+  else
+    ShowMessage('You need to select (or create) an animation first.');
 end;
 
 procedure TFrameMixer.RefreshMixerList;
@@ -46,7 +48,7 @@ begin
     Self.ScrollBoxMixer.Controls[I].Free;
   // Readd mixer list
   if FormMain.AnimationItem <> nil then
-    for I := 0 to FormMain.AnimationItem.MixerList.Count - 1 do
+    for I := FormMain.AnimationItem.MixerList.Count - 1 downto 0 do
     begin
       FormAddMixer.AddFrameMixer(FormMain.AnimationItem.MixerList.Items[I] as TCastleSpineMixerMixerItem);
     end;

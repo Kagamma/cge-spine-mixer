@@ -54,6 +54,7 @@ type
   public
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
+    procedure SortKey;
     function AddKey(ATime, AValue: Single): TCastleSpineMixerKeyItem;
     procedure DeleteKey(ATime: Single);
     function GetValue(ATime: Single): Single;
@@ -282,6 +283,11 @@ begin
     Result := 0;
 end;
 
+function DoMixerCompare(Item1, Item2: TCollectionItem): Integer;
+begin
+  Result := CompareStr(TCastleSpineMixerMixerItem(Item1).Name, TCastleSpineMixerMixerItem(Item2).Name);
+end;
+
 constructor TCastleSpineMixerMixerItem.Create(ACollection: TCollection);
 begin
   inherited;
@@ -292,6 +298,11 @@ destructor TCastleSpineMixerMixerItem.Destroy;
 begin
   Self.FKeyList.Free;
   inherited;
+end;
+
+procedure TCastleSpineMixerMixerItem.SortKey;
+begin
+  Self.FKeyList.Sort(@DoKeyCompare);
 end;
 
 function TCastleSpineMixerMixerItem.AddKey(ATime, AValue: Single): TCastleSpineMixerKeyItem;
@@ -311,7 +322,7 @@ begin
     Result := Self.FKeyList.Add as TCastleSpineMixerKeyItem;
   Result.Time := ATime;
   Result.Value := AValue;
-  Self.FKeyList.Sort(@DoKeyCompare);
+  SortKey;
 end;
 
 procedure TCastleSpineMixerMixerItem.DeleteKey(ATime: Single);
@@ -398,6 +409,7 @@ begin
       raise Exception.Create('Duplicate mixers are not allowed');
   Result := Self.FMixerList.Add as TCastleSpineMixerMixerItem;
   Result.Name := MixerName;
+  Self.FMixerList.Sort(@DoMixerCompare);
 end;
 
 procedure TCastleSpineMixerAnimationItem.DeleteMixer(MixerItem: TCastleSpineMixerMixerItem);

@@ -60,13 +60,17 @@
             },
             {
               "$$ClassName" : "TCastleSpineMixerKeyItem",
-              "Time" : 3.1099998950958252E-001,
+              "Time" : 2.8799998760223389E-001,
               "Value" : 1.0000000000000000E+000
             },
             {
               "$$ClassName" : "TCastleSpineMixerKeyItem",
-              "Time" : 6.6299998760223389E-001,
+              "Time" : 5.8099997043609619E-001,
               "Value" : 1.0000000000000000E+000
+            },
+            {
+              "$$ClassName" : "TCastleSpineMixerKeyItem",
+              "Time" : 8.0599999427795410E-001
             },
             {
               "$$ClassName" : "TCastleSpineMixerKeyItem",

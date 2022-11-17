@@ -20,8 +20,10 @@ type
     Panel3: TPanel;
     Panel4: TPanel;
     ButtonDelete: TSpeedButton;
+    ButtonKey: TSpeedButton;
     TrackBarValue: TTrackBar;
     procedure ButtonDeleteClick(Sender: TObject);
+    procedure ButtonKeyClick(Sender: TObject);
     procedure TrackBarValueChange(Sender: TObject);
   private
 
@@ -71,6 +73,12 @@ begin
   FormMain.AnimationItem.DeleteMixer(Self.MixerItem);
   FormMain.FrameTimeline.ForceRepaint;
   EditorSpineMixer.SetInitialPose(FormMain.AnimationItem.Name);
+end;
+
+procedure TFrameMixerItem.ButtonKeyClick(Sender: TObject);
+begin
+  // This is treat as trackbar value change
+  Self.TrackBarValueChange(Sender);
 end;
 
 procedure TFrameMixerItem.TrackBarValueUpdate(ATime: Single);

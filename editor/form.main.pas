@@ -224,6 +224,8 @@ begin
   EditorSpineMixer.Time := 0;
   LabelTime.Caption := FloatToStrF(EditorSpineMixer.Time, ffFixed, 0, 3);
   ButtonPlay.ImageIndex := 2;
+  // Unselected key
+  Self.FrameTimeline.DeselectedKey;
   // Refresh mixer list
   Self.FrameMixer.RefreshMixerList;
   // Redraw timeline
@@ -264,7 +266,10 @@ begin
     EditorSpineMixer.URL := OpenDialogMixer.FileName;
     //                          
     FormNewAnimation.RefreshAnimation;
-    Self.ComboBoxAnimations.ItemIndex := 0;
+    if Self.ComboBoxAnimations.Items.Count > 0 then
+      Self.ComboBoxAnimations.ItemIndex := 0
+    else
+      Self.ComboBoxAnimations.ItemIndex := -1;
     Self.ComboBoxAnimationsChange(Sender);
   end;
 end;
@@ -276,6 +281,9 @@ begin
     try
       Self.StateMain.Spine.URL := OpenDialogSpine.FileName;
       Self.StateMain.Viewport.AssignDefaultCamera;
+      Self.MenuItemNewMixerData.Enabled := True;      
+      Self.MenuItemLoadMixerData.Enabled := True;
+      Self.MenuItemSaveMixerData.Enabled := True;
     except
       on E: Exception do
         ShowMessage(E.Message);

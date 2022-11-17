@@ -67,6 +67,8 @@ begin
     //
     MixerItem := FormMain.AnimationItem.AddMixer(MixerName);
     Self.AddFrameMixer(MixerItem);
+    // Sort control
+    FormMain.FrameMixer.RefreshMixerList;
     Self.Hide;
   end;
 end;

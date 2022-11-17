@@ -46,7 +46,8 @@ type
     function TimeToCoord(const ATime: Single): Integer;
     procedure ForceRepaint;
     function IsInsideFrameTimeRec(X, Y: Integer; out ARec: TFrameTimeRec): Boolean;
-    procedure DeleteSelectedKey;
+    procedure DeleteSelectedKey;                     
+    procedure DeselectedKey;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   end;
 
@@ -147,10 +148,13 @@ begin
   begin
     Self.PaintBoxTimeline.Canvas.Pen.Color := clBlue;
     X := Self.TimeToCoord(Self.SelectedTime);
+
+    Self.PaintBoxTimeline.Canvas.Pen.Width := 3;
     Self.PaintBoxTimeline.Canvas.Line(X - 7, 0, X + 7, 0);
     Self.PaintBoxTimeline.Canvas.Line(X - 7, 0, X, 16);
     Self.PaintBoxTimeline.Canvas.Line(X + 7, 0, X, 16);
     Self.PaintBoxTimeline.Canvas.Line(X, 16, X, Self.PaintBoxTimeline.Height - 1);
+    Self.PaintBoxTimeline.Canvas.Pen.Width := 1;
 
     S := FloatToStrF(Self.SelectedTime, ffFixed, 0, 3);
     Self.PaintBoxTimeline.Canvas.TextOut(
@@ -166,7 +170,7 @@ begin
   Self.PaintBoxTimeline.Canvas.Pen.Style := psSolid;
   for I := 0 to AnimationItem.MixerList.Count - 1 do
   begin
-    MixerItem := AnimationItem.MixerList.Items[I] as TCastleSpineMixerMixerItem;
+    MixerItem := AnimationItem.MixerList.Items[AnimationItem.MixerList.Count - I - 1] as TCastleSpineMixerMixerItem;
     Y := (AnimationItem.MixerList.Count - I - 1) * 40 + 70;
     Self.PaintBoxTimeline.Canvas.Brush.Color := $D0D0D0;
     Self.PaintBoxTimeline.Canvas.FillRect(30, Y - BAR_SIZE, TimelineWidth - 30, Y + BAR_SIZE);
@@ -251,15 +255,17 @@ begin
     if (X >= 30) and (X <= Self.PaintBoxTimeline.Width - 30) then
     begin
       Self.SelectedTime := Self.CoordToTime(X);
-      EditorSpineMixer.Time := Self.SelectedTime;
-      EditorSpineMixer.SetInitialPose(FormMain.AnimationItem.Name);
     end else
       Self.SelectedTime := -1;
     // If there's a selected key, move it around
     if Self.SelectedRec.KeyItem <> nil then
     begin
       Self.SelectedRec.KeyItem.Time := Self.SelectedTime;
+      // Sort timeline
+      Self.SelectedRec.MixerItem.SortKey;
     end;
+    EditorSpineMixer.Time := Self.SelectedTime;
+    EditorSpineMixer.SetInitialPose(FormMain.AnimationItem.Name);
     // Update mixer values on UI
     for I := 0 to FormMain.FrameMixer.ScrollBoxMixer.ControlCount - 1 do
     begin
@@ -296,8 +302,9 @@ begin
   end else
   begin
     Self.SelectedTime := Rec.KeyItem.Time;
-    Self.SelectedRec := Rec;
-    Self.ForceRepaint;
+    Self.SelectedRec := Rec;   
+    EditorSpineMixer.Time := Self.SelectedTime;
+    EditorSpineMixer.SetInitialPose(FormMain.AnimationItem.Name);
   end;
   // Update mixer values on UI
   for I := 0 to FormMain.FrameMixer.ScrollBoxMixer.ControlCount - 1 do
@@ -372,6 +379,12 @@ begin
   begin
     Self.DeleteSelectedKey;
   end;
+end;
+
+procedure TFrameTimeline.DeselectedKey;
+begin
+  Self.SelectedRec.KeyItem := nil;
+  Self.ForceRepaint;
 end;
 
 end.
