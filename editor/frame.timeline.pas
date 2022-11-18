@@ -37,6 +37,7 @@ type
   private
     FIsMouseDown,
     FIsFaraway: Boolean;
+    FIsDirty: Boolean;
     FrameTimeRecList: TFrameTimeRecList;
   public
     IsRepainted: Boolean;
@@ -62,7 +63,8 @@ implementation
 uses
   Math,
   Frame.MixerItem,
-  Form.Main;
+  Form.Main,
+  Utils.Undo;
 
 { TFrameTimeline }
 
@@ -284,6 +286,11 @@ begin
     // If there's a selected key, move it around
     if (Self.FIsFaraway) and (Self.SelectedRec.KeyItem <> nil) then
     begin
+      if not Self.FIsDirty then
+      begin
+        UndoSystem.Mark;
+      end;
+      Self.FIsDirty := True;
       Self.SelectedRec.KeyItem.Time := Self.SelectedTime;
       // Sort timeline
       Self.SelectedRec.MixerItem.SortKey;
@@ -304,6 +311,7 @@ procedure TFrameTimeline.PaintBoxTimelineMouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   Self.FIsMouseDown := False;
+  Self.FIsDirty := False;
 end;
 
 procedure TFrameTimeline.PaintBoxTimelineMouseDown(Sender: TObject;
@@ -316,6 +324,7 @@ begin
   Self.MouseDownX := X;
   Self.MouseDownY := Y;
   Self.FIsFaraway := False;
+  Self.FIsDirty := False;
   if not Self.IsInsideFrameTimeRec(X, Y, Rec) then
   begin
     Self.SelectedRec.KeyItem := nil;
@@ -368,8 +377,12 @@ end;
 
 procedure TFrameTimeline.MenuItemActivateClick(Sender: TObject);
 begin
-  Self.SelectedRec.KeyItem.Actived := not Self.SelectedRec.KeyItem.Actived;
-  Self.ForceRepaint;
+  if Self.SelectedRec.KeyItem <> nil then
+  begin
+    UndoSystem.Mark;
+    Self.SelectedRec.KeyItem.Actived := not Self.SelectedRec.KeyItem.Actived;
+    Self.ForceRepaint;
+  end;
 end;
 
 function TFrameTimeline.CoordToTime(const AX: Integer): Single;
@@ -416,6 +429,7 @@ procedure TFrameTimeline.DeleteSelectedKey;
 begin
   if Self.SelectedRec.KeyItem <> nil then
   begin
+    UndoSystem.Mark;
     Self.SelectedRec.MixerItem.DeleteKey(Self.SelectedRec.KeyItem.Time);
     Self.SelectedRec.KeyItem := nil;
     Self.ForceRepaint;

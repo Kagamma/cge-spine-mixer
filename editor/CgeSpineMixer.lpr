@@ -13,7 +13,7 @@ uses
   Forms, castle_base, castle_components, castle_window,
   CastleSpineMixer, CastleSpine, Spine, Form.Main, Frame.MixerItem, Frame.Mixer,
   Frame.Viewer, Form.NewAnimation, Form.RenameAnimation, Frame.Timeline,
-  Form.AddMixer, Form.CurveEditor;
+  Form.AddMixer, Form.CurveEditor, Utils.Undo;
 
 {$R *.res}
 

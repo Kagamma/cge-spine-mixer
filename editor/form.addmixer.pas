@@ -35,7 +35,8 @@ implementation
 
 uses
   Form.Main,
-  Frame.MixerItem;
+  Frame.MixerItem,
+  Utils.Undo;
 
 { TFormAddMixer }
 
@@ -63,7 +64,8 @@ var
   MixerName: String;
 begin
   if Self.ComboboxMixer.ItemIndex >= 0 then
-  begin     
+  begin
+    UndoSystem.Mark;
     MixerName := Self.ComboboxMixer.Items[Self.ComboboxMixer.ItemIndex];
     //
     MixerItem := FormMain.AnimationItem.AddMixer(MixerName);

@@ -1,24 +1,23 @@
 object FrameTimeline: TFrameTimeline
   Left = 0
-  Height = 0
+  Height = 319
   Top = 0
-  Width = 0
+  Width = 587
   Align = alClient
-  ClientHeight = 0
-  ClientWidth = 0
+  ClientHeight = 319
+  ClientWidth = 587
   TabOrder = 0
-  DesignLeft = 334
-  DesignTop = 2
+  DesignLeft = 333
+  DesignTop = 1
   object ScrollBoxTimeline: TScrollBox
     Left = 0
-    Height = 0
+    Height = 319
     Top = 0
-    Width = 0
-    HorzScrollBar.Page = 1
-    VertScrollBar.Page = 1
+    Width = 587
+    VertScrollBar.Page = 50
     Align = alClient
-    ClientHeight = 0
-    ClientWidth = 0
+    ClientHeight = 315
+    ClientWidth = 583
     TabOrder = 0
     object PaintBoxTimeline: TPanel
       Left = -2
@@ -45,6 +44,7 @@ object FrameTimeline: TFrameTimeline
     end
     object MenuItemActivate: TMenuItem
       Caption = 'Activate'
+      ShortCut = 8257
       OnClick = MenuItemActivateClick
     end
   end

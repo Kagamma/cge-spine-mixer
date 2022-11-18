@@ -41,6 +41,9 @@ type
     LabelKind: TLabel;
     LabelTime: TLabel;
     MainMenu: TMainMenu;
+    MenuItemRedo: TMenuItem;
+    MenuItemUndo: TMenuItem;
+    MenuItemEdit: TMenuItem;
     MenuItemNewMixerData: TMenuItem;
     MenuItemSaveMixerData: TMenuItem;
     MenuItemLoadMixerData: TMenuItem;
@@ -90,9 +93,11 @@ type
     procedure MenuItemLoadMixerDataClick(Sender: TObject);
     procedure MenuItemLoadSpineModelClick(Sender: TObject);
     procedure MenuItemNewMixerDataClick(Sender: TObject);
+    procedure MenuItemRedoClick(Sender: TObject);
     procedure MenuItemSaveMixerDataClick(Sender: TObject);
     procedure ButtonAddMixerClick(Sender: TObject);
     procedure ButtonEditCurveClick(Sender: TObject);
+    procedure MenuItemUndoClick(Sender: TObject);
     procedure TimerPlayStartTimer(Sender: TObject);
     procedure TimerPlayTimer(Sender: TObject);
     procedure TimerUpdateTimer(Sender: TObject);
@@ -115,7 +120,8 @@ implementation
 uses
   Form.NewAnimation,
   Form.RenameAnimation,
-  Form.CurveEditor;
+  Form.CurveEditor,
+  Utils.Undo;
 
 constructor TStateMain.Create(AOwner: TComponent);
 begin
@@ -185,6 +191,7 @@ begin
     if MessageDlg('Deletion', 'Do you want to delete "' + Self.ComboBoxAnimations.Items[Self.ComboBoxAnimations.ItemIndex] + '" animation?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
     begin
       try
+        UndoSystem.Mark;
         EditorSpineMixer.Data.DeleteAnimation(Self.ComboBoxAnimations.ItemIndex);
         // Refresh combobox animation
         Self.ComboBoxAnimations.Items.Delete(Self.ComboBoxAnimations.ItemIndex);
@@ -289,6 +296,7 @@ procedure TFormMain.MenuItemLoadMixerDataClick(Sender: TObject);
 begin
   if OpenDialogMixer.Execute then
   begin
+    UndoSystem.Clear;
     // Load new mixer data
     EditorSpineMixer.URL := OpenDialogMixer.FileName;
     //                          
@@ -323,6 +331,7 @@ procedure TFormMain.MenuItemNewMixerDataClick(Sender: TObject);
 var
   I: Integer;
 begin
+  UndoSystem.Clear;
   // Create new mixer data
   EditorSpineMixer.Data.Free;
   EditorSpineMixer.Data := TCastleSpineMixerData.Create(EditorSpineMixer);
@@ -330,6 +339,18 @@ begin
   EditorSpineMixer.Time := 0;
   FormNewAnimation.RefreshAnimation;
   Self.ComboBoxAnimations.ItemIndex := -1;
+  Self.ComboBoxAnimationsChange(Sender);
+end;
+
+procedure TFormMain.MenuItemRedoClick(Sender: TObject);
+begin
+  UndoSystem.Redo;
+  Self.FrameTimeline.SelectedRec.KeyItem := nil;
+  FormNewAnimation.RefreshAnimation;
+  if Self.ComboBoxAnimations.Items.Count > 0 then
+    Self.ComboBoxAnimations.ItemIndex := 0
+  else
+    Self.ComboBoxAnimations.ItemIndex := -1;
   Self.ComboBoxAnimationsChange(Sender);
 end;
 
@@ -351,6 +372,18 @@ begin
   FormCurveEditor.ControlPoints[0] := Vector2(Self.FrameTimeline.SelectedRec.KeyItem.CX1, Self.FrameTimeline.SelectedRec.KeyItem.CY1);       
   FormCurveEditor.ControlPoints[1] := Vector2(Self.FrameTimeline.SelectedRec.KeyItem.CX2, Self.FrameTimeline.SelectedRec.KeyItem.CY2);
   FormCurveEditor.Show;
+end;
+
+procedure TFormMain.MenuItemUndoClick(Sender: TObject);
+begin
+  UndoSystem.Undo;
+  Self.FrameTimeline.SelectedRec.KeyItem := nil;
+  FormNewAnimation.RefreshAnimation;
+  if Self.ComboBoxAnimations.Items.Count > 0 then
+    Self.ComboBoxAnimations.ItemIndex := 0
+  else
+    Self.ComboBoxAnimations.ItemIndex := -1;
+  Self.ComboBoxAnimationsChange(Sender);
 end;
 
 procedure TFormMain.TimerPlayStartTimer(Sender: TObject);
@@ -386,6 +419,8 @@ begin
   begin
     Self.PanelMixerItemKind.Visible := False;
   end;
+  Self.MenuItemUndo.Enabled := UndoSystem.CanUndo;     
+  Self.MenuItemRedo.Enabled := UndoSystem.CanRedo;
 end;
 
 end.

@@ -44,7 +44,8 @@ implementation
 {$R *.lfm}
 
 uses
-  Form.Main;
+  Form.Main,
+  Utils.Undo;
 
 { TFormCurveEditor }
 
@@ -74,6 +75,7 @@ end;
 
 procedure TFormCurveEditor.ButtonOkClick(Sender: TObject);
 begin
+  UndoSystem.Mark;
   UpdateKeyItemControlPoints;
   Self.Hide;
 end;

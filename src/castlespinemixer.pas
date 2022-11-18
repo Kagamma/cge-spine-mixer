@@ -139,6 +139,8 @@ type
     {$ifdef CASTLE_DESIGN_MODE}
     function PropertySections(const PropertyName: String): TPropertySections; override;
     {$endif}
+    function DataToJSONString: String;
+    procedure JSONStringToData(JSONString: String);
     function PlayAnimation(const AnimationName: String; const Loop: boolean; const InitialTime: Single = 0): Boolean;
     procedure StopAnimation;
     { This mainly use to set initial pose based on time value }
@@ -557,6 +559,33 @@ procedure TCastleSpineMixerBehavior.SetSetAutoAnimation(const AAnimation: String
 begin
   Self.FAutoAnimation := AAnimation;
   Self.FIsCheckAutoAnimation := True;
+end;
+
+function TCastleSpineMixerBehavior.DataToJSONString: String;
+var
+  Streamer: TJSONStreamer;
+begin
+  Streamer := TJSONStreamer.Create(nil);
+  try
+    Result := Streamer.ObjectToJSONString(Self.Data);
+  finally
+    Streamer.Free;
+  end;
+end;
+
+procedure TCastleSpineMixerBehavior.JSONStringToData(JSONString: String);
+var
+  DeStreamer: TJSONDeStreamer;
+begin
+  if Self.FData <> nil then
+    FreeAndNil(Self.FData);
+  DeStreamer := TJSONDeStreamer.Create(nil);
+  Self.FData := TCastleSpineMixerData.Create(Self);
+  try
+    DeStreamer.JSONToObject(JSONString, Self.FData);
+  finally
+    DeStreamer.Free;
+  end;
 end;
 
 procedure TCastleSpineMixerBehavior.Update(const SecondsPassed: Single; var RemoveMe: TRemoveType);

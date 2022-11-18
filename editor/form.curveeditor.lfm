@@ -11,6 +11,7 @@ object FormCurveEditor: TFormCurveEditor
   OnDeactivate = FormDeactivate
   OnShow = FormShow
   Position = poScreenCenter
+  LCLVersion = '2.3.0.0'
   object PanelCurveEditor: TPanel
     Left = 10
     Height = 300

@@ -25,8 +25,14 @@ type
     procedure ButtonDeleteClick(Sender: TObject);
     procedure ButtonKeyClick(Sender: TObject);
     procedure TrackBarValueChange(Sender: TObject);
+    procedure TrackBarValueKeyUp(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure TrackBarValueMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure TrackBarValueMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
   private
-
+    FIsDirty: Boolean;
   public
     IsManualUpdate: Boolean;
     MixerOwner: TWinControl;
@@ -40,7 +46,8 @@ implementation
 {$R *.lfm}
 
 uses
-  Form.Main;
+  Form.Main,
+  Utils.Undo;
 
 { TFrameMixerItem }
 
@@ -56,6 +63,11 @@ var
 begin
   if Self.IsManualUpdate then
     Exit;
+  if not Self.FIsDirty then
+  begin
+    UndoSystem.Mark;
+    Self.FIsDirty := True;
+  end;
   V := TrackBarValue.Position / 1000;
   LabelValue.Caption := FloatToStrF(V, ffFixed, 0, 3);
   // Add time / value pair
@@ -65,6 +77,24 @@ begin
     EditorSpineMixer.SetInitialPose(FormMain.AnimationItem.Name);
   end;
   FormMain.FrameTimeline.ForceRepaint;
+end;
+
+procedure TFrameMixerItem.TrackBarValueKeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  Self.FIsDirty := False;
+end;
+
+procedure TFrameMixerItem.TrackBarValueMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  Self.FIsDirty := False;
+end;
+
+procedure TFrameMixerItem.TrackBarValueMouseUp(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  Self.FIsDirty := False;
 end;
 
 procedure TFrameMixerItem.ButtonDeleteClick(Sender: TObject);

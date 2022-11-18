@@ -2,22 +2,22 @@ object FrameMixerItem: TFrameMixerItem
   Left = 0
   Height = 68
   Top = 0
-  Width = 568
+  Width = 402
   Align = alTop
   ClientHeight = 68
-  ClientWidth = 568
+  ClientWidth = 402
   TabOrder = 0
-  DesignLeft = 335
-  DesignTop = 3
+  DesignLeft = 334
+  DesignTop = 2
   object Panel1: TPanel
     Left = 0
     Height = 32
     Top = 0
-    Width = 568
+    Width = 402
     Align = alTop
     BevelOuter = bvNone
     ClientHeight = 32
-    ClientWidth = 568
+    ClientWidth = 402
     TabOrder = 0
     object LabelName: TLabel
       Left = 8
@@ -34,35 +34,38 @@ object FrameMixerItem: TFrameMixerItem
     Left = 0
     Height = 36
     Top = 32
-    Width = 568
+    Width = 402
     Align = alClient
     ClientHeight = 36
-    ClientWidth = 568
+    ClientWidth = 402
     TabOrder = 1
     object Panel3: TPanel
       Left = 1
       Height = 34
       Top = 1
-      Width = 463
+      Width = 297
       Align = alClient
       ClientHeight = 34
-      ClientWidth = 463
+      ClientWidth = 297
       TabOrder = 0
       object TrackBarValue: TTrackBar
         Left = 1
         Height = 32
         Top = 1
-        Width = 461
+        Width = 295
         Frequency = 100
         Max = 1000
         OnChange = TrackBarValueChange
         Position = 0
         Align = alClient
+        OnMouseDown = TrackBarValueMouseDown
+        OnMouseUp = TrackBarValueMouseUp
+        OnKeyUp = TrackBarValueKeyUp
         TabOrder = 0
       end
     end
     object Panel4: TPanel
-      Left = 464
+      Left = 298
       Height = 34
       Top = 1
       Width = 103

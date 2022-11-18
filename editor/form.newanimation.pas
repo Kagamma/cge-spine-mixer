@@ -33,7 +33,8 @@ implementation
 {$R *.lfm}
 
 uses
-  Form.Main;
+  Form.Main,
+  Utils.Undo;
 
 { TFormNewAnimation }
 
@@ -59,6 +60,7 @@ var
   I: Integer;
 begin
   try
+    UndoSystem.Mark;
     EditorSpineMixer.Data.AddAnimation(EditAnimationName.Text);
     // Refresh animation combobox
     FormMain.ComboBoxAnimations.Clear;
