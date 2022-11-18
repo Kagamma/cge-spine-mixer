@@ -27,6 +27,8 @@ type
     procedure FormShow(Sender: TObject);
     procedure PanelCurveEditorPaint(Sender: TObject);
   private
+    FIsDirty: Boolean;
+    FIsOk: Boolean;
     IsMouseDown: Boolean;
     SelectedControlPoint: Integer;
     procedure UpdateKeyItemControlPoints;       
@@ -75,14 +77,15 @@ end;
 
 procedure TFormCurveEditor.ButtonOkClick(Sender: TObject);
 begin
-  UndoSystem.Mark;
+  Self.FIsOk := True;
   UpdateKeyItemControlPoints;
   Self.Hide;
 end;
 
 procedure TFormCurveEditor.FormDeactivate(Sender: TObject);
 begin
-  Self.ButtonCancelClick(Sender);
+  if not Self.FIsOk then
+    Self.ButtonCancelClick(Sender);
 end;
 
 procedure TFormCurveEditor.FormMouseDown(Sender: TObject; Button: TMouseButton;
@@ -111,6 +114,11 @@ begin
      (X >= 0) and (X < Self.PanelCurveEditor.Width) and
      (Y >= 0) and (Y < Self.PanelCurveEditor.Height) then
   begin
+    if not Self.FIsDirty then
+    begin
+      UndoSystem.Mark;
+      Self.FIsDirty := True;
+    end;
     ControlPoints[SelectedControlPoint] := Vector2(X, Y);
     Self.PanelCurveEditor.Invalidate;
   end;
@@ -135,6 +143,8 @@ begin
   Self.ControlPoints[1].X := Self.ControlPoints[1].X * Self.PanelCurveEditor.Width;
   Self.ControlPoints[1].Y := Self.PanelCurveEditor.Height - Self.ControlPoints[1].Y * Self.PanelCurveEditor.Height;
   Self.SelectedControlPoint := -1;
+  Self.FIsDirty := False;
+  Self.FIsOk := False;
 end;
 
 procedure TFormCurveEditor.PanelCurveEditorPaint(Sender: TObject);
