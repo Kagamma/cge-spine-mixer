@@ -165,7 +165,8 @@ begin
 end;
 
 procedure TFormMain.ButtonBezierClick(Sender: TObject);
-begin
+begin   
+  UndoSystem.Mark;
   Self.FrameTimeline.SelectedRec.KeyItem.Kind := mktBezier;
   Self.FrameTimeline.ForceRepaint;
 end;
@@ -207,6 +208,7 @@ end;
 
 procedure TFormMain.ButtonLinearClick(Sender: TObject);
 begin
+  UndoSystem.Mark;
   Self.FrameTimeline.SelectedRec.KeyItem.Kind := mktLinear;
   Self.FrameTimeline.ForceRepaint;
 end;
