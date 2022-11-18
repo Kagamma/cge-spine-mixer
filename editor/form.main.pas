@@ -275,6 +275,7 @@ procedure TFormMain.FloatTimeChange(Sender: TObject);
 begin
   if Self.ComboBoxAnimations.ItemIndex >= 0 then
   begin
+    UndoSystem.Mark;
     // Change animation time
     Self.AnimationItem.Duration := FloatTime.Value;
     // Redraw timeline
