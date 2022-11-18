@@ -28,6 +28,7 @@ type
   end;
 
   TFormMain = class(TForm)
+    ButtonAddEvent: TSpeedButton;
     ComboBoxAnimations: TComboBox;
     EditMixerFilter: TEdit;
     FloatZoom: TFloatSpinEdit;
@@ -77,6 +78,7 @@ type
     Splitter2: TSplitter;
     TimerUpdate: TTimer;
     TimerPlay: TTimer;
+    procedure ButtonAddEventClick(Sender: TObject);
     procedure ButtonAddNewAnimationClick(Sender: TObject);
     procedure ButtonBezierClick(Sender: TObject);
     procedure ButtonCloneAnimationClick(Sender: TObject);
@@ -121,6 +123,7 @@ uses
   Form.NewAnimation,
   Form.RenameAnimation,
   Form.CurveEditor,
+  Form.AddEvent,
   Utils.Undo;
 
 constructor TStateMain.Create(AOwner: TComponent);
@@ -162,6 +165,11 @@ end;
 procedure TFormMain.ButtonAddNewAnimationClick(Sender: TObject);
 begin
   FormNewAnimation.Show;
+end;
+
+procedure TFormMain.ButtonAddEventClick(Sender: TObject);
+begin
+  FrameMixer.MenuItemAddEventClick(Sender);
 end;
 
 procedure TFormMain.ButtonBezierClick(Sender: TObject);

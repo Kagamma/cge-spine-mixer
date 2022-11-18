@@ -13,17 +13,20 @@ type
   { TFrameMixerItem }
 
   TFrameMixerItem = class(TFrame)
+    EditStringValue: TEdit;
     LabelValue: TLabel;
     LabelName: TLabel;
     Panel1: TPanel;
     Panel2: TPanel;
-    Panel3: TPanel;
+    PanelMixer: TPanel;
     Panel4: TPanel;
     ButtonDelete: TSpeedButton;
     ButtonKey: TSpeedButton;
     TrackBarValue: TTrackBar;
     procedure ButtonDeleteClick(Sender: TObject);
     procedure ButtonKeyClick(Sender: TObject);
+    procedure EditStringValueChange(Sender: TObject);
+    procedure EditStringValueEditingDone(Sender: TObject);
     procedure TrackBarValueChange(Sender: TObject);
     procedure TrackBarValueKeyUp(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -32,13 +35,16 @@ type
     procedure TrackBarValueMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
   private
+    FMixerItem: TCastleSpineMixerMixerItem;
     FIsDirty: Boolean;
+    procedure SetMixerItem(V: TCastleSpineMixerMixerItem);
   public
     IsManualUpdate: Boolean;
     MixerOwner: TWinControl;
-    MixerItem: TCastleSpineMixerMixerItem;
     constructor Create(TheOwner: TComponent); override;
-    procedure TrackBarValueUpdate(ATime: Single);
+    procedure UpdateUI(ATime: Single);
+
+    property MixerItem: TCastleSpineMixerMixerItem read FMixerItem write SetMixerItem;
   end;
 
 implementation
@@ -50,6 +56,14 @@ uses
   Utils.Undo;
 
 { TFrameMixerItem }
+
+procedure TFrameMixerItem.SetMixerItem(V: TCastleSpineMixerMixerItem);
+begin
+  Self.TrackBarValue.Visible := V.Kind = mtMixer;    
+  Self.EditStringValue.Visible := V.Kind = mtEvent;
+  Self.LabelValue.Visible := V.Kind = mtMixer;
+  Self.FMixerItem := V;
+end;
 
 constructor TFrameMixerItem.Create(TheOwner: TComponent);
 begin
@@ -111,13 +125,42 @@ begin
   Self.TrackBarValueChange(Sender);
 end;
 
-procedure TFrameMixerItem.TrackBarValueUpdate(ATime: Single);
+procedure TFrameMixerItem.EditStringValueChange(Sender: TObject);
+begin
+  if Self.IsManualUpdate then
+    Exit;
+  if not Self.FIsDirty then
+  begin
+    UndoSystem.Mark;
+    Self.FIsDirty := True;
+  end; 
+  // Add time / value pair
+  if FormMain.FrameTimeline.SelectedTime >= 0 then
+  begin
+    MixerItem.AddKey(FormMain.FrameTimeline.SelectedTime, Self.EditStringValue.Text);
+  end;
+  FormMain.FrameTimeline.ForceRepaint;
+end;
+
+procedure TFrameMixerItem.EditStringValueEditingDone(Sender: TObject);
+begin
+  Self.FIsDirty := False;
+end;
+
+procedure TFrameMixerItem.UpdateUI(ATime: Single);
 var
   V: Single;
 begin
-  V := Self.MixerItem.GetValue(ATime);
-  LabelValue.Caption := FloatToStrF(V, ffFixed, 0, 3);
-  TrackBarValue.Position := Round(V * 1000);
+  if Self.FMixerItem.Kind = mtMixer then
+  begin
+    V := Self.MixerItem.GetValue(ATime);
+    LabelValue.Caption := FloatToStrF(V, ffFixed, 0, 3);
+    TrackBarValue.Position := Round(V * 1000);
+  end else
+  if Self.FMixerItem.Kind = mtEvent then
+  begin
+    EditStringValue.Text := Self.MixerItem.GetStringValuePrecise(ATime);
+  end;
 end;
 
 end.

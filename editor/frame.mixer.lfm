@@ -1,19 +1,19 @@
 object FrameMixer: TFrameMixer
   Left = 0
-  Height = 410
+  Height = 298
   Top = 0
-  Width = 307
+  Width = 295
   Align = alClient
-  ClientHeight = 410
-  ClientWidth = 307
+  ClientHeight = 298
+  ClientWidth = 295
   TabOrder = 0
-  DesignLeft = 336
-  DesignTop = 4
+  DesignLeft = 335
+  DesignTop = 3
   object ScrollBoxMixer: TScrollBox
     Left = 0
-    Height = 410
+    Height = 298
     Top = 0
-    Width = 307
+    Width = 295
     HorzScrollBar.Page = 1
     VertScrollBar.Page = 1
     Align = alClient
@@ -26,6 +26,10 @@ object FrameMixer: TFrameMixer
     object MenuItemAddMixer: TMenuItem
       Caption = 'Add Mixer'
       OnClick = MenuItemAddMixerClick
+    end
+    object MenuItemAddEvent: TMenuItem
+      Caption = 'Add Event'
+      OnClick = MenuItemAddEventClick
     end
   end
 end

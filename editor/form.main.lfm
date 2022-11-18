@@ -126,13 +126,24 @@ object FormMain: TFormMain
       object LabelMixerCount: TLabel
         Left = 9
         Height = 15
-        Top = 23
+        Top = 45
         Width = 297
         Align = alTop
         BorderSpacing.Left = 8
         Caption = '0 Mixer'
         Color = clDefault
         ParentColor = False
+      end
+      object ButtonAddEvent: TSpeedButton
+        Left = 1
+        Height = 22
+        Top = 23
+        Width = 305
+        Align = alTop
+        Caption = 'Add Event'
+        Images = ImageList
+        ImageIndex = 8
+        OnClick = ButtonAddEventClick
       end
     end
   end

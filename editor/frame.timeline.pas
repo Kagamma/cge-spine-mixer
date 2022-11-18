@@ -211,34 +211,41 @@ begin
       Self.FrameTimeRecList.Add(Rec);
       
       //
+      if MixerItem.Kind = mtMixer then
+      begin
+        if IsFirstKey then
+          Self.PaintBoxTimeline.Canvas.MoveTo(X + 3, Y + BAR_SIZE - 1 - Round((BAR_SIZE * 2 - 2) * KeyItem.Value))
+        else
+        begin
+          Self.PaintBoxTimeline.Canvas.LineTo(X - 3, Y + BAR_SIZE - 1 - Round((BAR_SIZE * 2 - 2) * KeyItem.Value));
+          Self.PaintBoxTimeline.Canvas.MoveTo(X + 3, Y + BAR_SIZE - 1 - Round((BAR_SIZE * 2 - 2) * KeyItem.Value));
+        end;
+        if not Rec.KeyItem.Actived then
+          Self.PaintBoxTimeline.Canvas.Pen.Color := $D0D0D0
+        else
+          case KeyItem.Kind of
+            mktBezier:
+              Self.PaintBoxTimeline.Canvas.Pen.Color := clYellow;
+            else
+              Self.PaintBoxTimeline.Canvas.Pen.Color := clGray;
+          end;
+        IsFirstKey := False;
+      end;
+      //
       if Rec.KeyItem.Actived then
       begin
         if Rec.KeyItem = Self.SelectedRec.KeyItem then
           Self.PaintBoxTimeline.Canvas.Brush.Color := clGreen
         else
-          Self.PaintBoxTimeline.Canvas.Brush.Color := clRed;
+        begin
+          if MixerItem.Kind = mtMixer then
+            Self.PaintBoxTimeline.Canvas.Brush.Color := clRed
+          else
+            Self.PaintBoxTimeline.Canvas.Brush.Color := clAqua;
+        end;
       end else
         Self.PaintBoxTimeline.Canvas.Brush.Color := clDkGray;
-      //
-      if IsFirstKey then
-        Self.PaintBoxTimeline.Canvas.MoveTo(X + 3, Y + BAR_SIZE - 1 - Round((BAR_SIZE * 2 - 2) * KeyItem.Value))
-      else
-      begin
-        Self.PaintBoxTimeline.Canvas.LineTo(X - 3, Y + BAR_SIZE - 1 - Round((BAR_SIZE * 2 - 2) * KeyItem.Value));
-        Self.PaintBoxTimeline.Canvas.MoveTo(X + 3, Y + BAR_SIZE - 1 - Round((BAR_SIZE * 2 - 2) * KeyItem.Value));
-      end;
-      if not Rec.KeyItem.Actived then
-        Self.PaintBoxTimeline.Canvas.Pen.Color := $D0D0D0
-      else
-        case KeyItem.Kind of
-          mktBezier:
-            Self.PaintBoxTimeline.Canvas.Pen.Color := clYellow;
-          else
-            Self.PaintBoxTimeline.Canvas.Pen.Color := clGray;
-        end;
-      //
       Self.PaintBoxTimeline.Canvas.FillRect(X - 3, Y - BAR_SIZE, X + 3, Y + BAR_SIZE);
-      IsFirstKey := False;
     end;
     Self.PaintBoxTimeline.Canvas.Brush.Color := clWhite;
     Self.PaintBoxTimeline.Canvas.Pen.Color := clBlack;
@@ -301,7 +308,7 @@ begin
     for I := 0 to FormMain.FrameMixer.ScrollBoxMixer.ControlCount - 1 do
     begin
       TFrameMixerItem(FormMain.FrameMixer.ScrollBoxMixer.Controls[I]).IsManualUpdate := True;
-      TFrameMixerItem(FormMain.FrameMixer.ScrollBoxMixer.Controls[I]).TrackBarValueUpdate(Self.SelectedTime);
+      TFrameMixerItem(FormMain.FrameMixer.ScrollBoxMixer.Controls[I]).UpdateUI(Self.SelectedTime);
       TFrameMixerItem(FormMain.FrameMixer.ScrollBoxMixer.Controls[I]).IsManualUpdate := False;
     end;
   end;
@@ -350,7 +357,7 @@ begin
   for I := 0 to FormMain.FrameMixer.ScrollBoxMixer.ControlCount - 1 do
   begin
     TFrameMixerItem(FormMain.FrameMixer.ScrollBoxMixer.Controls[I]).IsManualUpdate := True;
-    TFrameMixerItem(FormMain.FrameMixer.ScrollBoxMixer.Controls[I]).TrackBarValueUpdate(Self.SelectedTime); 
+    TFrameMixerItem(FormMain.FrameMixer.ScrollBoxMixer.Controls[I]).UpdateUI(Self.SelectedTime);
     TFrameMixerItem(FormMain.FrameMixer.ScrollBoxMixer.Controls[I]).IsManualUpdate := False;
   end;
   Self.ForceRepaint;

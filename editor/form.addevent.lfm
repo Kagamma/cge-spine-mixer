@@ -1,0 +1,41 @@
+object FormAddEvent: TFormAddEvent
+  Left = 386
+  Height = 129
+  Top = 31
+  Width = 422
+  Caption = 'Add Event'
+  ClientHeight = 129
+  ClientWidth = 422
+  OnShow = FormShow
+  Position = poScreenCenter
+  object ButtonOk: TBitBtn
+    Left = 280
+    Height = 30
+    Top = 80
+    Width = 120
+    Caption = 'Ok'
+    Images = FormMain.ImageList
+    ImageIndex = 11
+    OnClick = ButtonOkClick
+    TabOrder = 0
+  end
+  object ButtonCancel: TBitBtn
+    Left = 152
+    Height = 30
+    Top = 80
+    Width = 120
+    Caption = 'Cancel'
+    Images = FormMain.ImageList
+    ImageIndex = 10
+    OnClick = ButtonCancelClick
+    TabOrder = 1
+  end
+  object EditEventName: TEdit
+    Left = 19
+    Height = 23
+    Top = 20
+    Width = 381
+    TabOrder = 2
+    TextHint = 'Event Name'
+  end
+end

@@ -2,18 +2,17 @@ object FormAddMixer: TFormAddMixer
   Left = 342
   Height = 119
   Top = 250
-  Width = 548
+  Width = 410
   BorderStyle = bsDialog
   Caption = 'Add Mixer'
   ClientHeight = 119
-  ClientWidth = 548
+  ClientWidth = 410
   FormStyle = fsStayOnTop
   OnDeactivate = FormDeactivate
   OnShow = FormShow
   Position = poScreenCenter
-  LCLVersion = '2.3.0.0'
   object ButtonCancel: TBitBtn
-    Left = 272
+    Left = 144
     Height = 30
     Top = 72
     Width = 120
@@ -24,7 +23,7 @@ object FormAddMixer: TFormAddMixer
     TabOrder = 0
   end
   object ButtonOk: TBitBtn
-    Left = 400
+    Left = 272
     Height = 30
     Top = 72
     Width = 120
@@ -38,7 +37,7 @@ object FormAddMixer: TFormAddMixer
     Left = 18
     Height = 23
     Top = 17
-    Width = 500
+    Width = 374
     ItemHeight = 15
     ReadOnly = True
     TabOrder = 2

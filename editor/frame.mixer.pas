@@ -12,9 +12,11 @@ type
   { TFrameMixer }
 
   TFrameMixer = class(TFrame)
+    MenuItemAddEvent: TMenuItem;
     MenuItemAddMixer: TMenuItem;
     PopupMenuMixer: TPopupMenu;
     ScrollBoxMixer: TScrollBox;
+    procedure MenuItemAddEventClick(Sender: TObject);
     procedure MenuItemAddMixerClick(Sender: TObject);
   private
   public
@@ -27,6 +29,7 @@ implementation
 
 uses
   Form.Main,
+  Form.AddEvent,
   Form.AddMixer;
 
 { TFrameMixer }
@@ -35,6 +38,14 @@ procedure TFrameMixer.MenuItemAddMixerClick(Sender: TObject);
 begin
   if (FormMain.StateMain.Spine.URL <> '') and (FormMain.ComboBoxAnimations.ItemIndex >= 0) then
     FormAddMixer.Show
+  else
+    ShowMessage('You need to select (or create) an animation first.');
+end;
+
+procedure TFrameMixer.MenuItemAddEventClick(Sender: TObject);
+begin
+  if (FormMain.StateMain.Spine.URL <> '') and (FormMain.ComboBoxAnimations.ItemIndex >= 0) then
+    FormAddEvent.Show
   else
     ShowMessage('You need to select (or create) an animation first.');
 end;

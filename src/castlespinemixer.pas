@@ -10,15 +10,25 @@ uses
   PropEdits, CastlePropEdits, CastleDebugTransform, Forms, Controls, Graphics, Dialogs,
   ButtonPanel, StdCtrls, ExtCtrls, CastleInternalExposeTransformsDialog,
   {$endif}
-  CastleTransform, CastleSpine, spine, CastleClassUtils, CastleCurves, fpjsonrtti;
+  CastleTransform, CastleSpine, spine, CastleClassUtils, CastleCurves, fpjsonrtti,
+  Generics.Collections;
 
 type
-  TCastleSpineMixerKeyType = (mktLinear, mktBezier);
+  TCastleSpineMixerKeyType = (mktLinear, mktBezier);     
+  TCastleSpineMixerType = (mtMixer, mtEvent);
+
+  TCastleSpineMixerEvent = record
+    Name,
+    Value: String;
+  end;
+
+  TCastleSpineMixerEventNotify = procedure(const Event: TCastleSpineMixerEvent) of object;
 
   TCastleSpineMixerKeyItem = class(TCollectionItem)
   private
     FTime: Single; // Key time
     FValue: Single; // Key value
+    FStringValue: String; // Key event value
     FKind: TCastleSpineMixerKeyType;
     FCX1, FCY1, FCX2, FCY2: Single;
     FIsBezierCached: Boolean;
@@ -34,8 +44,9 @@ type
     procedure CalculateBezier;
   published          
     property Actived: Boolean read FActived write FActived default True;
-    property Time: Single read FTime write FTime;
-    property Value: Single read FValue write FValue;
+    property Time: Single read FTime write FTime default 0.0;
+    property Value: Single read FValue write FValue default 0.0;
+    property StringValue: String read FStringValue write FStringValue;
     property Kind: TCastleSpineMixerKeyType read FKind write FKind default mktLinear;
     property CX1: Single read FCX1 write SetCX1 default 0.5;
     property CY1: Single read FCY1 write SetCY1 default 0.0;
@@ -52,17 +63,22 @@ type
   TCastleSpineMixerMixerItem = class(TCollectionItem)
   private
     FName: String; // Mixer name
-    FKeyList: TCastleSpineMixerKeyList; // List of Keys
+    FKeyList: TCastleSpineMixerKeyList; // List of Keys   
+    FKind: TCastleSpineMixerType;
   public
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
     procedure SortKey;
-    function AddKey(ATime, AValue: Single): TCastleSpineMixerKeyItem;
+    function AddKey(ATime, AValue: Single): TCastleSpineMixerKeyItem; overload;
+    function AddKey(ATime: Single; AValue: String): TCastleSpineMixerKeyItem; overload;
     procedure DeleteKey(ATime: Single);
-    function GetValue(ATime: Single): Single;
+    function GetValue(ATime: Single): Single;     
+    function GetStringValue(ATime: Single): TCastleSpineMixerKeyItem;
+    function GetStringValuePrecise(ATime: Single): String;
   published
     property Name: String read FName write FName;  
     property KeyList: TCastleSpineMixerKeyList read FKeyList;
+    property Kind: TCastleSpineMixerType read FKind write FKind default mtMixer;
   end;
 
   TCastleSpineMixerMixerList = class(TCollection)
@@ -117,11 +133,14 @@ type
     property AnimationList: TCastleSpineMixerAnimationList read FAnimationList;
   end;
 
+  TCastleSpineMixerEventTriggerDict = specialize TDictionary<String, TCastleSpineMixerKeyItem>;
   TCastleSpineMixerBehavior = class(TCastleBehavior)
   private
+    FEventTriggerDict: TCastleSpineMixerEventTriggerDict;
     FData: TCastleSpineMixerData;
     FURL: String;
     FTime: Single;
+    FOnEventNotify: TCastleSpineMixerEventNotify; // Used by Spine mixer's events
     { True = playing animation }
     FIsPlaying: Boolean;
     FIsLooped: Boolean;
@@ -139,6 +158,8 @@ type
     {$ifdef CASTLE_DESIGN_MODE}
     function PropertySections(const PropertyName: String): TPropertySections; override;
     {$endif}
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
     function DataToJSONString: String;
     procedure JSONStringToData(JSONString: String);
     function PlayAnimation(const AnimationName: String; const Loop: boolean; const InitialTime: Single = 0): Boolean;
@@ -151,6 +172,7 @@ type
   published
     property URL: String read FURL write LoadData;
     property AutoAnimation: String read FAutoAnimation write SetSetAutoAnimation;
+    property OnEventNotify: TCastleSpineMixerEventNotify read FOnEventNotify write FOnEventNotify;
   end;
 
 var
@@ -300,6 +322,7 @@ constructor TCastleSpineMixerMixerItem.Create(ACollection: TCollection);
 begin
   inherited;
   Self.FKeyList := TCastleSpineMixerKeyList.Create(TCastleSpineMixerKeyItem);
+  Self.FKind := mtMixer;
 end;
 
 destructor TCastleSpineMixerMixerItem.Destroy;
@@ -330,6 +353,26 @@ begin
     Result := Self.FKeyList.Add as TCastleSpineMixerKeyItem;
   Result.Time := ATime;
   Result.Value := AValue;
+  SortKey;
+end;
+
+function TCastleSpineMixerMixerItem.AddKey(ATime: Single; AValue: String): TCastleSpineMixerKeyItem;
+var
+  I: Integer;
+begin
+  Result := nil;
+  for I := 0 to Self.FKeyList.Count - 1 do
+  begin
+    if TCastleSpineMixerKeyItem(Self.FKeyList.Items[I]).Time = ATime then
+    begin
+      Result := Self.FKeyList.Items[I] as TCastleSpineMixerKeyItem;
+      break;
+    end;
+  end;
+  if Result = nil then
+    Result := Self.FKeyList.Add as TCastleSpineMixerKeyItem;
+  Result.Time := ATime;
+  Result.StringValue := AValue;
   SortKey;
 end;
 
@@ -391,6 +434,46 @@ begin
   if (NextKey <> nil) and (PrevKey = nil) then
     Result := NextKey.Value;
   Result := Min(0.999999, Max(Result, 0.000001));
+end;
+
+function TCastleSpineMixerMixerItem.GetStringValue(ATime: Single): TCastleSpineMixerKeyItem;
+var
+  I: Integer;
+  PrevKey,
+  NextKey: TCastleSpineMixerKeyItem;
+begin
+  PrevKey := nil;
+  NextKey := nil;
+  Result := nil;
+  for I := 0 to Self.FKeyList.Count - 1 do
+  begin
+    NextKey := Self.FKeyList.Items[I] as TCastleSpineMixerKeyItem;
+    if NextKey.Time <= ATime then
+      PrevKey := NextKey
+    else
+    if NextKey.Time > ATime then
+      break;
+  end;
+  if (NextKey <> nil) and (PrevKey <> nil) then
+  begin
+    if not PrevKey.Actived then
+      Exit(nil);
+    Result := PrevKey;
+  end;
+end;
+
+function TCastleSpineMixerMixerItem.GetStringValuePrecise(ATime: Single): String;
+var
+  I: Integer;
+  NextKey: TCastleSpineMixerKeyItem;
+begin
+  Result := '';
+  for I := 0 to Self.FKeyList.Count - 1 do
+  begin
+    NextKey := Self.FKeyList.Items[I] as TCastleSpineMixerKeyItem;
+    if Abs(NextKey.Time - ATime) <= 0.001 then
+      Result := NextKey.StringValue;
+  end;
 end;
 
 // ----- TCastleSpineMixerMixerList -----
@@ -561,6 +644,18 @@ begin
   Self.FIsCheckAutoAnimation := True;
 end;
 
+constructor TCastleSpineMixerBehavior.Create(AOwner: TComponent);
+begin
+  inherited;
+  Self.FEventTriggerDict := TCastleSpineMixerEventTriggerDict.Create;
+end;
+
+destructor TCastleSpineMixerBehavior.Destroy;
+begin
+  Self.FEventTriggerDict.Free;
+  inherited;
+end;
+
 function TCastleSpineMixerBehavior.DataToJSONString: String;
 var
   Streamer: TJSONStreamer;
@@ -596,6 +691,8 @@ var
   MixerItem: TCastleSpineMixerMixerItem;
   TrackEntry: PspTrackEntry;   
   Params: TCastleSpinePlayAnimationParameters;
+  KeyItem: TCastleSpineMixerKeyItem;
+  Event: TCastleSpineMixerEvent;
 begin
   inherited;
   if not (Self.Parent is TCastleSpine) then Exit;
@@ -617,8 +714,8 @@ begin
     MixerItem := TCastleSpineMixerMixerItem(Self.FCurrentAnimationItem.MixerList.Items[I]);
     for J := 0 to Spine.AnimationsList.Count - 1 do
     begin
-      // Found animation
-      if MixerItem.Name = Spine.AnimationsList[J] then
+      // Found animation 
+      if (MixerItem.Name = Spine.AnimationsList[J]) and (MixerItem.Kind = mtMixer) then
       begin
         TrackEntry := Spine.TrackEntries[Track];
         V := MixerItem.GetValue(Self.FTime);
@@ -644,13 +741,30 @@ begin
         if (TrackEntry <> nil) then
         begin
           TrackEntry^.trackTime := TrackEntry^.animation^.duration * MixerItem.GetValue(Self.FTime);
-        end;   
+        end;
         Inc(Track);
+      end else 
+      if (MixerItem.Kind = mtEvent) then
+      begin
+        if Self.OnEventNotify <> nil then
+        begin
+          KeyItem := MixerItem.GetStringValue(Self.FTime);
+          if (KeyItem <> nil) and
+             ((not Self.FEventTriggerDict.ContainsKey(MixerItem.Name)) or
+             (Self.FEventTriggerDict[MixerItem.Name] <> KeyItem)) then
+          begin
+            Self.FEventTriggerDict.AddOrSetValue(MixerItem.Name, KeyItem);
+            Event.Name := MixerItem.Name;
+            Event.Value := KeyItem.StringValue;
+            Self.OnEventNotify(Event);
+          end;
+        end;
       end;
     end;
   end;
   //
   Self.FTime := Self.FTime + SecondsPassed * Spine.TimePlayingSpeed;
+  //
   if Self.FTime > Self.FCurrentAnimationItem.Duration then
   begin
     Self.FTime := 0;
@@ -676,6 +790,7 @@ begin
   //
   Spine := TCastleSpine(Self.Parent);
   Self.FCurrentAnimationItem := Self.Data.FindAnimation(AnimationName);
+  Self.FEventTriggerDict.Clear;
   if Self.FCurrentAnimationItem <> nil then
   begin
     Self.FTime := Max(0, InitialTime);
@@ -690,7 +805,7 @@ begin
       for J := 0 to Spine.AnimationsList.Count - 1 do
       begin
         // Found animation
-        if MixerItem.Name = Spine.AnimationsList[J] then
+        if (MixerItem.Kind = mtMixer) and (MixerItem.Name = Spine.AnimationsList[J]) then
         begin
           // Mark it as playing
           // TODO: Proper handle play animation, instead of hard setting
@@ -755,7 +870,7 @@ begin
     for J := 0 to Spine.AnimationsList.Count - 1 do
     begin
       // Found animation
-      if MixerItem.Name = Spine.AnimationsList[J] then
+      if (MixerItem.Kind = mtMixer) and (MixerItem.Name = Spine.AnimationsList[J]) then
       begin
         // Mark it as playing
         Params.Name := MixerItem.Name;

@@ -13,7 +13,7 @@ uses
   Forms, castle_base, castle_components, castle_window,
   CastleSpineMixer, CastleSpine, Spine, Form.Main, Frame.MixerItem, Frame.Mixer,
   Frame.Viewer, Form.NewAnimation, Form.RenameAnimation, Frame.Timeline,
-  Form.AddMixer, Form.CurveEditor, Utils.Undo;
+  Form.AddMixer, Form.CurveEditor, Utils.Undo, Form.AddEvent;
 
 {$R *.res}
 
@@ -26,6 +26,7 @@ begin
   Application.CreateForm(TFormRenameAnimation, FormRenameAnimation);
   Application.CreateForm(TFormAddMixer, FormAddMixer);
   Application.CreateForm(TFormCurveEditor, FormCurveEditor);
+  Application.CreateForm(TFormAddEvent, FormAddEvent);
   Application.Run;
 end.
 

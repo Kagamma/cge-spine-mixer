@@ -134,6 +134,13 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="Utils.Undo"/>
       </Unit>
+      <Unit>
+        <Filename Value="form.addevent.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormAddEvent"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Form.AddEvent"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
