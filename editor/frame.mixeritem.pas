@@ -113,6 +113,7 @@ end;
 
 procedure TFrameMixerItem.ButtonDeleteClick(Sender: TObject);
 begin
+  UndoSystem.Mark;
   FormMain.AnimationItem.DeleteMixer(Self.MixerItem);
   EditorSpineMixer.SetInitialPose(FormMain.AnimationItem.Name);
   FormMain.FrameMixer.RefreshMixerList;     
