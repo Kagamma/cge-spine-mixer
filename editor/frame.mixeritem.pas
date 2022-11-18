@@ -59,9 +59,9 @@ uses
 
 procedure TFrameMixerItem.SetMixerItem(V: TCastleSpineMixerMixerItem);
 begin
-  Self.TrackBarValue.Visible := V.Kind = mtMixer;    
-  Self.EditStringValue.Visible := V.Kind = mtEvent;
-  Self.LabelValue.Visible := V.Kind = mtMixer;
+  Self.TrackBarValue.Visible := V.Kind = smtMixer;
+  Self.EditStringValue.Visible := V.Kind = smtEvent;
+  Self.LabelValue.Visible := V.Kind = smtMixer;
   Self.FMixerItem := V;
 end;
 
@@ -152,13 +152,13 @@ procedure TFrameMixerItem.UpdateUI(ATime: Single);
 var
   V: Single;
 begin
-  if Self.FMixerItem.Kind = mtMixer then
+  if Self.FMixerItem.Kind = smtMixer then
   begin
     V := Self.MixerItem.GetValue(ATime);
     LabelValue.Caption := FloatToStrF(V, ffFixed, 0, 3);
     TrackBarValue.Position := Round(V * 1000);
   end else
-  if Self.FMixerItem.Kind = mtEvent then
+  if Self.FMixerItem.Kind = smtEvent then
   begin
     EditStringValue.Text := Self.MixerItem.GetStringValuePrecise(ATime);
   end;

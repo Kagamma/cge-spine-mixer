@@ -65,10 +65,10 @@ begin
     for I := FormMain.AnimationItem.MixerList.Count - 1 downto 0 do
     begin
       MixerItem := FormMain.AnimationItem.MixerList.Items[I] as TCastleSpineMixerMixerItem;
-      if MixerItem.Kind = mtMixer then
+      if MixerItem.Kind = smtMixer then
         Inc(MixerCount)
       else
-      if MixerItem.Kind = mtEvent then
+      if MixerItem.Kind = smtEvent then
         Inc(EventCount);
       if (FormMain.EditMixerFilter.Text = '') or
          (LowerCase(MixerItem.Name).IndexOf(LowerCase(FormMain.EditMixerFilter.Text)) >= 0) then

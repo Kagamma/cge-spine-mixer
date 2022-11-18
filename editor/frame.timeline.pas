@@ -211,7 +211,7 @@ begin
       Self.FrameTimeRecList.Add(Rec);
       
       //
-      if MixerItem.Kind = mtMixer then
+      if MixerItem.Kind = smtMixer then
       begin
         if IsFirstKey then
           Self.PaintBoxTimeline.Canvas.MoveTo(X + 3, Y + BAR_SIZE - 1 - Round((BAR_SIZE * 2 - 2) * KeyItem.Value))
@@ -224,7 +224,7 @@ begin
           Self.PaintBoxTimeline.Canvas.Pen.Color := $D0D0D0
         else
           case KeyItem.Kind of
-            mktBezier:
+            smktBezier:
               Self.PaintBoxTimeline.Canvas.Pen.Color := clYellow;
             else
               Self.PaintBoxTimeline.Canvas.Pen.Color := clGray;
@@ -238,7 +238,7 @@ begin
           Self.PaintBoxTimeline.Canvas.Brush.Color := clGreen
         else
         begin
-          if MixerItem.Kind = mtMixer then
+          if MixerItem.Kind = smtMixer then
             Self.PaintBoxTimeline.Canvas.Brush.Color := clRed
           else
             Self.PaintBoxTimeline.Canvas.Brush.Color := clAqua;

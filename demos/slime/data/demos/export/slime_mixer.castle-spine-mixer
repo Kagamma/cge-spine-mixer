@@ -41,7 +41,7 @@
               "CX2" : 1.0333333164453506E-001,
               "CY1" : 8.3666670322418213E-001,
               "CY2" : 9.6333330869674683E-001,
-              "Kind" : "mktBezier"
+              "Kind" : "smktBezier"
             },
             {
               "$$ClassName" : "TCastleSpineMixerKeyItem",
@@ -49,7 +49,7 @@
               "CX2" : 9.5333331823348999E-001,
               "CY1" : 4.3333351612091064E-002,
               "CY2" : 1.6333335638046265E-001,
-              "Kind" : "mktBezier",
+              "Kind" : "smktBezier",
               "Time" : 4.9599999189376831E-001,
               "Value" : 1.0000000000000000E+000
             },
@@ -69,7 +69,7 @@
               "CX2" : 2.0666666328907013E-001,
               "CY1" : 8.7000000476837158E-001,
               "CY2" : 9.8666667938232422E-001,
-              "Kind" : "mktBezier"
+              "Kind" : "smktBezier"
             },
             {
               "$$ClassName" : "TCastleSpineMixerKeyItem",
@@ -82,7 +82,7 @@
               "CX2" : 9.5333331823348999E-001,
               "CY1" : 2.6666641235351562E-002,
               "CY2" : 1.5666669607162476E-001,
-              "Kind" : "mktBezier",
+              "Kind" : "smktBezier",
               "Time" : 5.8099997043609619E-001,
               "Value" : 1.0000000000000000E+000
             },
@@ -113,7 +113,7 @@
               "CX2" : 1.8000000715255737E-001,
               "CY1" : 8.1000000238418579E-001,
               "CY2" : 9.7333335876464844E-001,
-              "Kind" : "mktBezier"
+              "Kind" : "smktBezier"
             },
             {
               "$$ClassName" : "TCastleSpineMixerKeyItem",
@@ -122,7 +122,7 @@
             },
             {
               "$$ClassName" : "TCastleSpineMixerKeyItem",
-              "Kind" : "mktBezier",
+              "Kind" : "smktBezier",
               "Time" : 2.0000000000000000E+000,
               "Value" : 1.0000000000000000E+000
             },

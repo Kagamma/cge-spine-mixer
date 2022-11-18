@@ -52,7 +52,7 @@ begin
   end;
   for I := 0 to FormMain.FrameMixer.ScrollBoxMixer.ControlCount - 1 do
   begin
-    if (TFrameMixerItem(FormMain.FrameMixer.ScrollBoxMixer.Controls[I]).MixerItem.Kind = mtEvent) and
+    if (TFrameMixerItem(FormMain.FrameMixer.ScrollBoxMixer.Controls[I]).MixerItem.Kind = smtEvent) and
        (TFrameMixerItem(FormMain.FrameMixer.ScrollBoxMixer.Controls[I]).MixerItem.Name = Self.EditEventName.Text) then
     begin
       ShowMessage('Event with this name is already existed.');
@@ -63,7 +63,7 @@ begin
   MixerName := Self.EditEventName.Text;
   //
   MixerItem := FormMain.AnimationItem.AddMixer(MixerName);
-  MixerItem.Kind := mtEvent;
+  MixerItem.Kind := smtEvent;
   FormAddMixer.AddFrameMixer(MixerItem);
   // Sort control
   FormMain.FrameMixer.RefreshMixerList;

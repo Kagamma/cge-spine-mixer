@@ -175,7 +175,7 @@ end;
 procedure TFormMain.ButtonBezierClick(Sender: TObject);
 begin   
   UndoSystem.Mark;
-  Self.FrameTimeline.SelectedRec.KeyItem.Kind := mktBezier;
+  Self.FrameTimeline.SelectedRec.KeyItem.Kind := smktBezier;
   Self.FrameTimeline.ForceRepaint;
 end;
 
@@ -217,7 +217,7 @@ end;
 procedure TFormMain.ButtonLinearClick(Sender: TObject);
 begin
   UndoSystem.Mark;
-  Self.FrameTimeline.SelectedRec.KeyItem.Kind := mktLinear;
+  Self.FrameTimeline.SelectedRec.KeyItem.Kind := smktLinear;
   Self.FrameTimeline.ForceRepaint;
 end;
 
@@ -415,7 +415,7 @@ begin
   begin
     Self.PanelMixerItemKind.Visible := True;
     case Self.FrameTimeline.SelectedRec.KeyItem.Kind of
-      mktBezier:
+      smktBezier:
         begin
           LabelKind.Caption := 'Bezier';
           Self.ButtonEditCurve.Enabled := True;

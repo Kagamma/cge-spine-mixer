@@ -95,7 +95,7 @@ begin
     IsMixerExisted := False;
     for I := 0 to FormMain.FrameMixer.ScrollBoxMixer.ControlCount - 1 do
     begin
-      if (TFrameMixerItem(FormMain.FrameMixer.ScrollBoxMixer.Controls[I]).MixerItem.Kind = mtMixer) and
+      if (TFrameMixerItem(FormMain.FrameMixer.ScrollBoxMixer.Controls[I]).MixerItem.Kind = smtMixer) and
          (TFrameMixerItem(FormMain.FrameMixer.ScrollBoxMixer.Controls[I]).MixerItem.Name = S) then
       begin
         IsMixerExisted := True;

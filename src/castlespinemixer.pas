@@ -14,10 +14,12 @@ uses
   Generics.Collections;
 
 type
-  TCastleSpineMixerKeyType = (mktLinear, mktBezier);     
-  TCastleSpineMixerType = (mtMixer, mtEvent);
+  TCastleSpineMixerKeyType = (smktLinear, smktBezier);
+  TCastleSpineMixerType = (smtMixer, smtEvent);
+  TCastleSpineMixerEventType = (smetEvent, smetEnd);
 
   TCastleSpineMixerEvent = record
+    Kind: TCastleSpineMixerEventType;
     Name,
     Value: String;
   end;
@@ -47,7 +49,7 @@ type
     property Time: Single read FTime write FTime default 0.0;
     property Value: Single read FValue write FValue default 0.0;
     property StringValue: String read FStringValue write FStringValue;
-    property Kind: TCastleSpineMixerKeyType read FKind write FKind default mktLinear;
+    property Kind: TCastleSpineMixerKeyType read FKind write FKind default smktLinear;
     property CX1: Single read FCX1 write SetCX1 default 0.5;
     property CY1: Single read FCY1 write SetCY1 default 0.0;
     property CX2: Single read FCX2 write SetCX2 default 0.5;
@@ -78,7 +80,7 @@ type
   published
     property Name: String read FName write FName;  
     property KeyList: TCastleSpineMixerKeyList read FKeyList;
-    property Kind: TCastleSpineMixerType read FKind write FKind default mtMixer;
+    property Kind: TCastleSpineMixerType read FKind write FKind default smtMixer;
   end;
 
   TCastleSpineMixerMixerList = class(TCollection)
@@ -322,7 +324,7 @@ constructor TCastleSpineMixerMixerItem.Create(ACollection: TCollection);
 begin
   inherited;
   Self.FKeyList := TCastleSpineMixerKeyList.Create(TCastleSpineMixerKeyItem);
-  Self.FKind := mtMixer;
+  Self.FKind := smtMixer;
 end;
 
 destructor TCastleSpineMixerMixerItem.Destroy;
@@ -418,7 +420,7 @@ begin
     else
     begin
       case PrevKey.Kind of
-        mktBezier:
+        smktBezier:
           begin
             T := PrevKey.GetBezierValue((ATime - PrevKey.Time) / (NextKey.Time - PrevKey.Time));
             Result := Lerp(PrevKey.Value, NextKey.Value, T);
@@ -715,7 +717,7 @@ begin
     for J := 0 to Spine.AnimationsList.Count - 1 do
     begin
       // Found animation 
-      if (MixerItem.Name = Spine.AnimationsList[J]) and (MixerItem.Kind = mtMixer) then
+      if (MixerItem.Name = Spine.AnimationsList[J]) and (MixerItem.Kind = smtMixer) then
       begin
         TrackEntry := Spine.TrackEntries[Track];
         V := MixerItem.GetValue(Self.FTime);
@@ -744,7 +746,7 @@ begin
         end;
         Inc(Track);
       end else 
-      if (MixerItem.Kind = mtEvent) then
+      if (MixerItem.Kind = smtEvent) then
       begin
         if Self.OnEventNotify <> nil then
         begin
@@ -754,6 +756,7 @@ begin
              (Self.FEventTriggerDict[MixerItem.Name] <> KeyItem)) then
           begin
             Self.FEventTriggerDict.AddOrSetValue(MixerItem.Name, KeyItem);
+            Event.Kind := smetEnd;
             Event.Name := MixerItem.Name;
             Event.Value := KeyItem.StringValue;
             Self.OnEventNotify(Event);
@@ -769,6 +772,13 @@ begin
   begin
     Self.FTime := 0;
     Self.StopAnimation;
+    if Self.OnEventNotify <> nil then
+    begin
+      Event.Kind := smetEnd;
+      Event.Name := '';
+      Event.Value := '';
+      Self.OnEventNotify(Event);
+    end;
     if Self.FIsLooped then
       Self.PlayAnimation(Self.FCurrentAnimationItem.Name, True);
   end;
@@ -805,7 +815,7 @@ begin
       for J := 0 to Spine.AnimationsList.Count - 1 do
       begin
         // Found animation
-        if (MixerItem.Kind = mtMixer) and (MixerItem.Name = Spine.AnimationsList[J]) then
+        if (MixerItem.Kind = smtMixer) and (MixerItem.Name = Spine.AnimationsList[J]) then
         begin
           // Mark it as playing
           // TODO: Proper handle play animation, instead of hard setting
@@ -870,7 +880,7 @@ begin
     for J := 0 to Spine.AnimationsList.Count - 1 do
     begin
       // Found animation
-      if (MixerItem.Kind = mtMixer) and (MixerItem.Name = Spine.AnimationsList[J]) then
+      if (MixerItem.Kind = smtMixer) and (MixerItem.Name = Spine.AnimationsList[J]) then
       begin
         // Mark it as playing
         Params.Name := MixerItem.Name;
