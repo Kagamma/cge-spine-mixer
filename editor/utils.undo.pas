@@ -32,7 +32,7 @@ uses
   Math;
 
 const
-  MAX_UNDO = 100;
+  MAX_UNDO = 50;
 
 constructor TUndoSystem.Create;
 begin
