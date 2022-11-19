@@ -13,6 +13,7 @@ type
     FBackupList: TStringList;
     FUndoCount: Integer;
   public
+    IsDirty: Boolean;
     constructor Create;
     destructor Destroy; override;
     function CanUndo: Boolean; 
@@ -50,6 +51,7 @@ procedure TUndoSystem.Clear;
 begin
   Self.FBackupList.Clear;
   Self.FUndoCount := 0;
+  Self.IsDirty := False;
 end;
 
 function TUndoSystem.CanUndo: Boolean;
@@ -72,6 +74,7 @@ begin
   if Self.FBackupList.Count > 100 then
     Self.FBackupList.Delete(0);
   Self.FUndoCount := Min(Self.FUndoCount + 1, MAX_UNDO);
+  Self.IsDirty := True;
 end;
 
 procedure TUndoSystem.Undo;

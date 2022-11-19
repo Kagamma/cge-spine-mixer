@@ -95,6 +95,7 @@ type
     procedure FloatSpeedChange(Sender: TObject);
     procedure FloatTimeChange(Sender: TObject);
     procedure FloatZoomChange(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure MenuItemLoadMixerDataClick(Sender: TObject);
     procedure MenuItemLoadSpineModelClick(Sender: TObject);
@@ -347,6 +348,13 @@ if Self.ComboBoxAnimations.ItemIndex >= 0 then
   end;
 end;
 
+procedure TFormMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  CanClose := True;
+  if (UndoSystem.IsDirty) and (MessageDlg('You have unsaved changes. Do you still want to quit?', mtConfirmation, [mbOk, mbCancel], 0) = mrCancel) then
+    CanClose := False;
+end;
+
 procedure TFormMain.MenuItemLoadMixerDataClick(Sender: TObject);
 begin
   if OpenDialogMixer.Execute then
@@ -414,6 +422,7 @@ begin
   if SaveDialogMixer.Execute then
   begin
     ComponentSave(EditorSpineMixer.Data, SaveDialogMixer.FileName);
+    UndoSystem.IsDirty := False;
   end;
 end;
 
