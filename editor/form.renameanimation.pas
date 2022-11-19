@@ -65,6 +65,7 @@ begin
   // Cannot rename if no animations
   if FormMain.ComboBoxAnimations.Items.Count = 0 then
     Self.Hide;
+  Self.EditAnimationName.Focused;
 end;
 
 end.

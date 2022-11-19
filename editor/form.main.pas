@@ -29,6 +29,8 @@ type
 
   TFormMain = class(TForm)
     ButtonAddEvent: TSpeedButton;
+    CheckBoxFilterMixer: TCheckBox;
+    CheckBoxFilterEvent: TCheckBox;
     ComboBoxAnimations: TComboBox;
     EditMixerFilter: TEdit;
     FloatZoom: TFloatSpinEdit;
@@ -86,6 +88,8 @@ type
     procedure ButtonLinearClick(Sender: TObject);
     procedure ButtonPlayClick(Sender: TObject);
     procedure ButtonRenameAnimationClick(Sender: TObject);
+    procedure CheckBoxFilterEventChange(Sender: TObject);
+    procedure CheckBoxFilterMixerChange(Sender: TObject);
     procedure ComboBoxAnimationsChange(Sender: TObject);
     procedure EditMixerFilterChange(Sender: TObject);
     procedure FloatSpeedChange(Sender: TObject);
@@ -164,7 +168,10 @@ end;
 
 procedure TFormMain.ButtonAddNewAnimationClick(Sender: TObject);
 begin
-  FormNewAnimation.Show;
+  if Self.StateMain.Spine.URL = '' then
+    ShowMessage('You need to load a spine model first.')
+  else
+    FormNewAnimation.Show;
 end;
 
 procedure TFormMain.ButtonAddEventClick(Sender: TObject);
@@ -183,7 +190,11 @@ procedure TFormMain.ButtonCloneAnimationClick(Sender: TObject);
 var
   CloneName: String;
 begin
-  if Self.AnimationItem = nil then Exit;
+  if Self.AnimationItem = nil then
+  begin
+    ShowMessage('You need to select (or create) an animation first.');
+    Exit;
+  end;
   CloneName := AnimationItem.Name + ' - clone';
   EditorSpineMixer.Data.CloneAnimation(AnimationItem.Name, CloneName);
   Self.ComboBoxAnimations.AddItem(
@@ -196,6 +207,11 @@ end;
 
 procedure TFormMain.ButtonDeleteAnimationClick(Sender: TObject);
 begin
+  if Self.AnimationItem = nil then
+  begin
+    ShowMessage('You need to select (or create) an animation first.');
+    Exit;
+  end;
   if Self.ComboBoxAnimations.ItemIndex >= 0 then
     if MessageDlg('Deletion', 'Do you want to delete "' + Self.ComboBoxAnimations.Items[Self.ComboBoxAnimations.ItemIndex] + '" animation?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
     begin
@@ -241,9 +257,37 @@ end;
 
 procedure TFormMain.ButtonRenameAnimationClick(Sender: TObject);
 begin
-  if Self.AnimationItem = nil then Exit;
+  if Self.AnimationItem = nil then
+  begin
+    ShowMessage('You need to select (or create) an animation first.');
+    Exit;
+  end;
   FormRenameAnimation.EditAnimationName.Text := Self.AnimationItem.Name;
   FormRenameAnimation.Show;
+end;
+
+procedure TFormMain.CheckBoxFilterEventChange(Sender: TObject);
+begin
+  // Stop animation
+  EditorSpineMixer.StopAnimation;
+  // Unselected key
+  Self.FrameTimeline.DeselectedKey;
+  // Refresh mixer list
+  Self.FrameMixer.RefreshMixerList;
+  // Redraw timeline
+  Self.FrameTimeline.ForceRepaint;
+end;
+
+procedure TFormMain.CheckBoxFilterMixerChange(Sender: TObject);
+begin
+  // Stop animation
+  EditorSpineMixer.StopAnimation;
+  // Unselected key
+  Self.FrameTimeline.DeselectedKey;
+  // Refresh mixer list
+  Self.FrameMixer.RefreshMixerList;
+  // Redraw timeline
+  Self.FrameTimeline.ForceRepaint;
 end;
 
 procedure TFormMain.ComboBoxAnimationsChange(Sender: TObject);

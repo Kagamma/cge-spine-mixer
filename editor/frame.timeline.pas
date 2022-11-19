@@ -181,7 +181,11 @@ begin
   for I := 0 to AnimationItem.MixerList.Count - 1 do
   begin
     MixerItem := AnimationItem.MixerList.Items[I] as TCastleSpineMixerMixerItem;
-    
+         
+    if (MixerItem.Kind = smtEvent) and (not FormMain.CheckBoxFilterEvent.Checked) then
+      continue;
+    if (MixerItem.Kind = smtMixer) and (not FormMain.CheckBoxFilterMixer.Checked) then
+      continue;
     if (FormMain.EditMixerFilter.Text <> '') and
        (LowerCase(MixerItem.Name).IndexOf(LowerCase(FormMain.EditMixerFilter.Text)) < 0) then
       Continue;

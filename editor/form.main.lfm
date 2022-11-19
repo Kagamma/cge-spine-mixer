@@ -2,16 +2,16 @@ object FormMain: TFormMain
   Left = -8
   Height = 575
   Top = -8
-  Width = 1109
+  Width = 1125
   Caption = 'Castle Spine Mixer'
   ClientHeight = 575
-  ClientWidth = 1109
+  ClientWidth = 1125
   Menu = MainMenu
   OnCreate = FormCreate
   Position = poDefault
   WindowState = wsMaximized
   object Panel2: TPanel
-    Left = 800
+    Left = 816
     Height = 329
     Top = 0
     Width = 309
@@ -151,19 +151,19 @@ object FormMain: TFormMain
     Left = 0
     Height = 241
     Top = 334
-    Width = 1109
+    Width = 1125
     Align = alBottom
     ClientHeight = 241
-    ClientWidth = 1109
+    ClientWidth = 1125
     TabOrder = 1
     object Panel8: TPanel
       Left = 1
       Height = 23
       Top = 1
-      Width = 1107
+      Width = 1123
       Align = alTop
       ClientHeight = 23
-      ClientWidth = 1107
+      ClientWidth = 1123
       TabOrder = 0
       object ButtonPlay: TSpeedButton
         Left = 5
@@ -193,7 +193,7 @@ object FormMain: TFormMain
         Left = 127
         Height = 21
         Top = 1
-        Width = 76
+        Width = 68
         Align = alLeft
         BorderSpacing.Left = 4
         Increment = 0.1
@@ -204,7 +204,7 @@ object FormMain: TFormMain
         Value = 1
       end
       object Label2: TLabel
-        Left = 207
+        Left = 199
         Height = 21
         Top = 1
         Width = 32
@@ -216,10 +216,10 @@ object FormMain: TFormMain
         Transparent = False
       end
       object FloatZoom: TFloatSpinEdit
-        Left = 243
+        Left = 235
         Height = 21
         Top = 1
-        Width = 74
+        Width = 61
         Align = alLeft
         BorderSpacing.Left = 4
         Increment = 0.25
@@ -230,7 +230,7 @@ object FormMain: TFormMain
         Value = 1
       end
       object LabelTime: TLabel
-        Left = 559
+        Left = 635
         Height = 21
         Top = 1
         Width = 15
@@ -242,10 +242,10 @@ object FormMain: TFormMain
         Transparent = False
       end
       object FloatSpeed: TFloatSpinEdit
-        Left = 357
+        Left = 336
         Height = 21
         Top = 1
-        Width = 74
+        Width = 58
         Align = alLeft
         BorderSpacing.Left = 4
         Increment = 0.1
@@ -256,7 +256,7 @@ object FormMain: TFormMain
         Value = 1
       end
       object Label3: TLabel
-        Left = 321
+        Left = 300
         Height = 21
         Top = 1
         Width = 32
@@ -268,7 +268,7 @@ object FormMain: TFormMain
         Transparent = False
       end
       object PanelMixerItemKind: TPanel
-        Left = 578
+        Left = 654
         Height = 21
         Top = 1
         Width = 170
@@ -325,7 +325,7 @@ object FormMain: TFormMain
         end
       end
       object EditMixerFilter: TEdit
-        Left = 435
+        Left = 398
         Height = 21
         Top = 1
         Width = 120
@@ -335,18 +335,44 @@ object FormMain: TFormMain
         TabOrder = 4
         TextHint = 'Filter'
       end
+      object CheckBoxFilterMixer: TCheckBox
+        Left = 522
+        Height = 21
+        Top = 1
+        Width = 53
+        Align = alLeft
+        BorderSpacing.Left = 4
+        Caption = 'Mixers'
+        Checked = True
+        OnChange = CheckBoxFilterMixerChange
+        State = cbChecked
+        TabOrder = 5
+      end
+      object CheckBoxFilterEvent: TCheckBox
+        Left = 579
+        Height = 21
+        Top = 1
+        Width = 52
+        Align = alLeft
+        BorderSpacing.Left = 4
+        Caption = 'Events'
+        Checked = True
+        OnChange = CheckBoxFilterEventChange
+        State = cbChecked
+        TabOrder = 6
+      end
     end
     object PanelTimeline: TPanel
       Left = 1
       Height = 216
       Top = 24
-      Width = 1107
+      Width = 1123
       Align = alClient
       TabOrder = 1
     end
   end
   object Splitter1: TSplitter
-    Left = 795
+    Left = 811
     Height = 329
     Top = 0
     Width = 5
@@ -358,7 +384,7 @@ object FormMain: TFormMain
     Left = 0
     Height = 5
     Top = 329
-    Width = 1109
+    Width = 1125
     Align = alBottom
     ResizeAnchor = akBottom
   end
@@ -366,7 +392,7 @@ object FormMain: TFormMain
     Left = 0
     Height = 329
     Top = 0
-    Width = 795
+    Width = 811
     Align = alClient
     TabOrder = 4
   end

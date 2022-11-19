@@ -19,6 +19,7 @@ type
     procedure ButtonCancelClick(Sender: TObject);
     procedure ButtonOkClick(Sender: TObject);
     procedure FormDeactivate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
 
   public
@@ -83,6 +84,11 @@ end;
 procedure TFormNewAnimation.FormDeactivate(Sender: TObject);
 begin
   Self.ButtonCancelClick(Sender);
+end;
+
+procedure TFormNewAnimation.FormShow(Sender: TObject);
+begin
+  Self.EditAnimationName.Focused;
 end;
 
 end.

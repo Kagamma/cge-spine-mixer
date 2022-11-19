@@ -73,6 +73,7 @@ end;
 procedure TFormAddEvent.FormShow(Sender: TObject);
 begin
   Self.EditEventName.Text := '';
+  Self.EditEventName.Focused;
 end;
 
 procedure TFormAddEvent.ButtonCancelClick(Sender: TObject);

@@ -138,6 +138,7 @@
         <Filename Value="form.addevent.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormAddEvent"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Form.AddEvent"/>
       </Unit>
@@ -162,6 +163,7 @@
     </CodeGeneration>
     <Linking>
       <Debugging>
+        <GenerateDebugInfo Value="False"/>
         <DebugInfoType Value="dsDwarf2Set"/>
       </Debugging>
       <Options>
