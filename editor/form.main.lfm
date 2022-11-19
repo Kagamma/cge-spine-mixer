@@ -1,22 +1,22 @@
 object FormMain: TFormMain
   Left = -8
-  Height = 575
+  Height = 558
   Top = -8
-  Width = 1125
+  Width = 1141
   Caption = 'Castle Spine Mixer'
-  ClientHeight = 575
-  ClientWidth = 1125
+  ClientHeight = 558
+  ClientWidth = 1141
   Menu = MainMenu
   OnCreate = FormCreate
   Position = poDefault
   WindowState = wsMaximized
   object Panel2: TPanel
-    Left = 816
-    Height = 329
+    Left = 832
+    Height = 312
     Top = 0
     Width = 309
     Align = alRight
-    ClientHeight = 329
+    ClientHeight = 312
     ClientWidth = 309
     TabOrder = 0
     object Panel4: TPanel
@@ -105,11 +105,11 @@ object FormMain: TFormMain
     end
     object PanelMixer: TPanel
       Left = 1
-      Height = 288
+      Height = 271
       Top = 40
       Width = 307
       Align = alClient
-      ClientHeight = 288
+      ClientHeight = 271
       ClientWidth = 307
       TabOrder = 1
       object ButtonAddMixer: TSpeedButton
@@ -150,20 +150,20 @@ object FormMain: TFormMain
   object Panel3: TPanel
     Left = 0
     Height = 241
-    Top = 334
-    Width = 1125
+    Top = 317
+    Width = 1141
     Align = alBottom
     ClientHeight = 241
-    ClientWidth = 1125
+    ClientWidth = 1141
     TabOrder = 1
     object Panel8: TPanel
       Left = 1
       Height = 23
       Top = 1
-      Width = 1123
+      Width = 1139
       Align = alTop
       ClientHeight = 23
-      ClientWidth = 1123
+      ClientWidth = 1139
       TabOrder = 0
       object ButtonPlay: TSpeedButton
         Left = 5
@@ -222,7 +222,7 @@ object FormMain: TFormMain
         Width = 61
         Align = alLeft
         BorderSpacing.Left = 4
-        Increment = 0.25
+        Increment = 0.1
         MaxValue = 8
         MinValue = 0.1
         OnChange = FloatZoomChange
@@ -366,14 +366,14 @@ object FormMain: TFormMain
       Left = 1
       Height = 216
       Top = 24
-      Width = 1123
+      Width = 1139
       Align = alClient
       TabOrder = 1
     end
   end
   object Splitter1: TSplitter
-    Left = 811
-    Height = 329
+    Left = 827
+    Height = 312
     Top = 0
     Width = 5
     Align = alRight
@@ -383,16 +383,16 @@ object FormMain: TFormMain
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 329
-    Width = 1125
+    Top = 312
+    Width = 1141
     Align = alBottom
     ResizeAnchor = akBottom
   end
   object PanelViewer: TPanel
     Left = 0
-    Height = 329
+    Height = 312
     Top = 0
-    Width = 811
+    Width = 827
     Align = alClient
     TabOrder = 4
   end
