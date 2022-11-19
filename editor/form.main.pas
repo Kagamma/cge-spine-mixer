@@ -196,6 +196,7 @@ begin
     ShowMessage('You need to select (or create) an animation first.');
     Exit;
   end;
+  UndoSystem.Mark;
   CloneName := AnimationItem.Name + ' - clone';
   EditorSpineMixer.Data.CloneAnimation(AnimationItem.Name, CloneName);
   Self.ComboBoxAnimations.AddItem(

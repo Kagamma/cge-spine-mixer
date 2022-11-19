@@ -35,6 +35,7 @@ implementation
 {$R *.lfm}
 
 uses
+  Utils.Undo,
   Form.Main;
 
 { TFormRenameAnimation }
@@ -49,6 +50,7 @@ var
   I: Integer;
 begin
   try
+    UndoSystem.Mark;
     EditorSpineMixer.Data.RenameAnimation(FormMain.ComboBoxAnimations.ItemIndex, EditAnimationName.Text);
     // Refresh animation combobox
     FormMain.ComboBoxAnimations.Items[FormMain.ComboBoxAnimations.ItemIndex] := EditAnimationName.Text;
