@@ -25,7 +25,6 @@ object FrameMixerItem: TFrameMixerItem
       Top = 8
       Width = 60
       Caption = 'LabelName'
-      Color = clDefault
       ParentColor = False
       Transparent = False
     end
@@ -102,7 +101,6 @@ object FrameMixerItem: TFrameMixerItem
         Top = 1
         Width = 6
         Caption = '0'
-        Color = clDefault
         ParentColor = False
         Transparent = False
       end
