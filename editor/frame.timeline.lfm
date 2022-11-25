@@ -1,23 +1,22 @@
 object FrameTimeline: TFrameTimeline
   Left = 0
-  Height = 319
+  Height = 380
   Top = 0
-  Width = 587
+  Width = 708
   Align = alClient
-  ClientHeight = 319
-  ClientWidth = 587
+  ClientHeight = 380
+  ClientWidth = 708
   TabOrder = 0
-  DesignLeft = 333
-  DesignTop = 1
+  DesignLeft = 332
   object ScrollBoxTimeline: TScrollBox
     Left = 0
-    Height = 319
+    Height = 380
     Top = 0
-    Width = 587
+    Width = 708
     VertScrollBar.Page = 50
     Align = alClient
-    ClientHeight = 315
-    ClientWidth = 583
+    ClientHeight = 376
+    ClientWidth = 704
     TabOrder = 0
     object PaintBoxTimeline: TPanel
       Left = -2

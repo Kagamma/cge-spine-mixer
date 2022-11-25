@@ -77,6 +77,8 @@ var
 begin
   if Self.IsManualUpdate then
     Exit;
+  if not FormMain.CheckBoxAutoKey.Checked then
+    Exit;
   if not Self.FIsDirty then
   begin
     UndoSystem.Mark;
@@ -129,6 +131,8 @@ end;
 procedure TFrameMixerItem.EditStringValueChange(Sender: TObject);
 begin
   if Self.IsManualUpdate then
+    Exit;
+  if not FormMain.CheckBoxAutoKey.Checked then
     Exit;
   if not Self.FIsDirty then
   begin

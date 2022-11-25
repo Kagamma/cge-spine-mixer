@@ -29,6 +29,7 @@ type
 
   TFormMain = class(TForm)
     ButtonAddEvent: TSpeedButton;
+    CheckBoxAutoKey: TCheckBox;
     CheckBoxFilterMixer: TCheckBox;
     CheckBoxFilterEvent: TCheckBox;
     ComboBoxAnimations: TComboBox;
