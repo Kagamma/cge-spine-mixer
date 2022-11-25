@@ -35,16 +35,16 @@ type
     FCX1, FCY1, FCX2, FCY2: Single;
     FIsBezierCached: Boolean;
     FActived: Boolean;
-    procedure SetCX1(const V: Single);                  
+    procedure SetCX1(const V: Single);
     procedure SetCY1(const V: Single);
     procedure SetCX2(const V: Single);
     procedure SetCY2(const V: Single);
     function GetBezierValue(const T: Single): Single;
-  public     
+  public
     BezierCurvePoints: array[0..19] of TVector2;
     constructor Create(ACollection: TCollection); override;
     procedure CalculateBezier;
-  published          
+  published
     property Actived: Boolean read FActived write FActived default True;
     property Time: Single read FTime write FTime default 0.0;
     property Value: Single read FValue write FValue default 0.0;
@@ -65,7 +65,7 @@ type
   TCastleSpineMixerMixerItem = class(TCollectionItem)
   private
     FName: String; // Mixer name
-    FKeyList: TCastleSpineMixerKeyList; // List of Keys   
+    FKeyList: TCastleSpineMixerKeyList; // List of Keys
     FKind: TCastleSpineMixerType;
   public
     constructor Create(ACollection: TCollection); override;
@@ -74,11 +74,11 @@ type
     function AddKey(ATime, AValue: Single): TCastleSpineMixerKeyItem; overload;
     function AddKey(ATime: Single; AValue: String): TCastleSpineMixerKeyItem; overload;
     procedure DeleteKey(ATime: Single);
-    function GetValue(ATime: Single): Single;     
+    function GetValue(ATime: Single): Single;
     function GetStringValue(ATime: Single): TCastleSpineMixerKeyItem;
     function GetStringValuePrecise(ATime: Single): String;
   published
-    property Name: String read FName write FName;  
+    property Name: String read FName write FName;
     property KeyList: TCastleSpineMixerKeyList read FKeyList;
     property Kind: TCastleSpineMixerType read FKind write FKind default smtMixer;
   end;
@@ -285,7 +285,7 @@ begin
   Self.FActived := True;
 end;
 
-procedure TCastleSpineMixerKeyItem.CalculateBezier; 
+procedure TCastleSpineMixerKeyItem.CalculateBezier;
 var
   I: Integer;
   ControlPoints: TCubicBezier2DPoints;
@@ -691,7 +691,7 @@ var
   I, J, Track: Integer;
   V: Single;
   MixerItem: TCastleSpineMixerMixerItem;
-  TrackEntry: PspTrackEntry;   
+  TrackEntry: PspTrackEntry;
   Params: TCastleSpinePlayAnimationParameters;
   KeyItem: TCastleSpineMixerKeyItem;
   Event: TCastleSpineMixerEvent;
@@ -716,7 +716,7 @@ begin
     MixerItem := TCastleSpineMixerMixerItem(Self.FCurrentAnimationItem.MixerList.Items[I]);
     for J := 0 to Spine.AnimationsList.Count - 1 do
     begin
-      // Found animation 
+      // Found animation
       if (MixerItem.Name = Spine.AnimationsList[J]) and (MixerItem.Kind = smtMixer) then
       begin
         TrackEntry := Spine.TrackEntries[Track];
@@ -745,7 +745,7 @@ begin
           TrackEntry^.trackTime := TrackEntry^.animation^.duration * MixerItem.GetValue(Self.FTime);
         end;
         Inc(Track);
-      end else 
+      end else
       if (MixerItem.Kind = smtEvent) then
       begin
         if Self.OnEventNotify <> nil then
@@ -775,7 +775,7 @@ begin
     if Self.OnEventNotify <> nil then
     begin
       Event.Kind := smetEnd;
-      Event.Name := '';
+      Event.Name := Self.FCurrentAnimationItem.Name;
       Event.Value := '';
       Self.OnEventNotify(Event);
     end;
@@ -846,12 +846,12 @@ begin
   end;
 end;
 
-procedure TCastleSpineMixerBehavior.StopAnimation; 
+procedure TCastleSpineMixerBehavior.StopAnimation;
 var
   Spine: TCastleSpine;
 begin
   if not (Self.Parent is TCastleSpine) then Exit;
-  //      
+  //
   Spine := TCastleSpine(Self.Parent);
   Spine.StopAnimation;
   Self.FIsPlaying := False;
