@@ -487,6 +487,7 @@ begin
   end;
   Self.MenuItemUndo.Enabled := UndoSystem.CanUndo;     
   Self.MenuItemRedo.Enabled := UndoSystem.CanRedo;
+  Self.ButtonPlay.Enabled := (Self.StateMain.Spine.URL <> '') and (Self.ComboBoxAnimations.ItemIndex >= 0);
 end;
 
 end.
